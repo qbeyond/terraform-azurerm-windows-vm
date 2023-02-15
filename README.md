@@ -22,7 +22,15 @@ It's very easy to use!
 
 ## Inputs
 
-No inputs.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_admin_password"></a> [admin\_password](#input\_admin\_password) | n/a | `string` | n/a | yes |
+| <a name="input_nic_config"></a> [nic\_config](#input\_nic\_config) | n/a | <pre>object({<br>      subnet = any<br>      location = optional(string)<br>      private_ip = optional(string)<br>      dns_servers = optional(list(string))<br>      nsg_id = optional(string)<br>  })</pre> | n/a | yes |
+| <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | n/a | `any` | n/a | yes |
+| <a name="input_vm_config"></a> [vm\_config](#input\_vm\_config) | n/a | <pre>object({<br>      hostname = string<br>      admin_username = string<br>      size = any<br>      os_sku = string<br>      os_version = string<br>      location = optional(string)<br>      availability_set_id = optional(string)<br>      disk_caching = optional(string)<br>      disk_storage_type = optional(string)<br>      disk_size_gb = optional(number)<br>  })</pre> | n/a | yes |
+| <a name="input_extra_disk"></a> [extra\_disk](#input\_extra\_disk) | n/a | <pre>object({<br>    enabled = bool<br>    storage_type = optional(string)<br>    caching = optional(string)<br>    size_gb = number<br>  })</pre> | <pre>{<br>  "enabled": false,<br>  "size_gb": 0<br>}</pre> | no |
+| <a name="input_name_overrides"></a> [name\_overrides](#input\_name\_overrides) | n/a | <pre>object({<br>      nic = optional(string)<br>      nic_ip_config = optional(string)<br>      pip = optional(string)<br>      vm = optional(string)<br>      extra_disk = optional(string)<br>  })</pre> | `{}` | no |
+| <a name="input_pip_config"></a> [pip\_config](#input\_pip\_config) | n/a | <pre>object({<br>      enabled = bool<br>      allocation_method = optional(string)<br>      location = optional(string)<br>      domain_name_label = optional(string)<br>  })</pre> | <pre>{<br>  "enabled": false<br>}</pre> | no |
 ## Outputs
 
 | Name | Description |

@@ -25,7 +25,9 @@ It's very easy to use!
 No inputs.
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_vm"></a> [vm](#output\_vm) | n/a |
 
 ## Resource types
 

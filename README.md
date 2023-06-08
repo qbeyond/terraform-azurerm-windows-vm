@@ -18,7 +18,7 @@ It's very easy to use!
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | 3.6.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~>3.7.0 |
 
 ## Inputs
 
@@ -41,12 +41,12 @@ It's very easy to use!
 
 | Type | Used |
 |------|-------|
-| [azurerm_managed_disk](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/managed_disk) | 1 |
-| [azurerm_network_interface](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/network_interface) | 1 |
-| [azurerm_network_interface_security_group_association](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/network_interface_security_group_association) | 1 |
-| [azurerm_public_ip](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/public_ip) | 1 |
-| [azurerm_virtual_machine_data_disk_attachment](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/virtual_machine_data_disk_attachment) | 1 |
-| [azurerm_windows_virtual_machine](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/windows_virtual_machine) | 1 |
+| [azurerm_managed_disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk) | 1 |
+| [azurerm_network_interface](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface) | 1 |
+| [azurerm_network_interface_security_group_association](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface_security_group_association) | 1 |
+| [azurerm_public_ip](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) | 1 |
+| [azurerm_virtual_machine_data_disk_attachment](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_data_disk_attachment) | 1 |
+| [azurerm_windows_virtual_machine](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/windows_virtual_machine) | 1 |
 
 **`Used` only includes resource blocks.** `for_each` and `count` meta arguments, as well as resource blocks of modules are not considered.
 
@@ -60,12 +60,12 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [azurerm_managed_disk.disk](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/managed_disk) | resource |
-| [azurerm_network_interface.nic](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/network_interface) | resource |
-| [azurerm_network_interface_security_group_association.nic_nsg](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/network_interface_security_group_association) | resource |
-| [azurerm_public_ip.pip](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/public_ip) | resource |
-| [azurerm_virtual_machine_data_disk_attachment.disk_vm](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/virtual_machine_data_disk_attachment) | resource |
-| [azurerm_windows_virtual_machine.vm](https://registry.terraform.io/providers/hashicorp/azurerm/3.6.0/docs/resources/windows_virtual_machine) | resource |
+| [azurerm_managed_disk.disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk) | resource |
+| [azurerm_network_interface.nic](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface) | resource |
+| [azurerm_network_interface_security_group_association.nic_nsg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface_security_group_association) | resource |
+| [azurerm_public_ip.pip](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) | resource |
+| [azurerm_virtual_machine_data_disk_attachment.disk_vm](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_data_disk_attachment) | resource |
+| [azurerm_windows_virtual_machine.vm](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/windows_virtual_machine) | resource |
 <!-- END_TF_DOCS -->
 
 ## Contribute

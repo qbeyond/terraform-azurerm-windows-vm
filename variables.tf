@@ -1,3 +1,5 @@
+### variables without defaults ###
+
 variable "pip_config" {
   type = object({
       enabled = bool
@@ -8,7 +10,15 @@ variable "pip_config" {
   default = {
     enabled = false
   }
+  validation {
+    condition = var.pip_config.allocation_method == null || var.pip_config.allocation_method in [
+      Static, 
+      Dynamic
+    ]
+  }
 }
+
+### variables with default ###
 
 variable "nic_config" {
   type = object({
@@ -29,28 +39,34 @@ variable "vm_config" {
       os_version = string
       location = optional(string)
       availability_set_id = optional(string)
-      disk_caching = optional(string)
+      zone = optional(string)
+      disk_caching = optional(string, "ReadWrite")
       disk_storage_type = optional(string)
       disk_size_gb = optional(number)
+      tags = optional(map(string))
   })
-}
-
-variable "extra_disk" {
-  type = object({
-    enabled = bool
-    storage_type = optional(string)
-    caching = optional(string)
-    size_gb = number
-  })
-  default = {
-    enabled = false
-    size_gb = 0
+  validation {
+    condition = var.vm_config.disk_caching == null || var.vm_config.disk_caching in [
+      None,
+      ReadOnly,
+      ReadWrite
+    ]
   }
 }
 
 variable "admin_password" {
   type = string
   sensitive = true
+}
+
+variable "data_disks" {
+  description = "All need data for data disk creation"
+  type = list(object({
+    disk_size_gb              = number
+    storage_account_type      = string
+    caching                   = optional(string, "None")
+    create_option             = optional(string, "Empty")
+  }))
 }
 
 variable "resource_group" {
@@ -65,5 +81,15 @@ variable "name_overrides" {
       vm = optional(string)
       extra_disk = optional(string)
   })
-  default = {}
+}
+
+variable "law_monitoranddiagnostics_workspace_id" {
+  type = string
+  default = null 
+}
+
+variable "law_monitoranddiagnostics_primary_shared_key" {
+  type = string
+  sensitive = true 
+  default = null
 }

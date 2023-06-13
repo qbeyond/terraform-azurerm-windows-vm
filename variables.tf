@@ -1,24 +1,20 @@
-### variables without defaults ###
-
-variable "pip_config" {
+variable "public_ip_config" {
   type = object({
       enabled = bool
-      allocation_method = optional(string)
+      allocation_method = optional(string, "Static")
       location = optional(string)
-      domain_name_label = optional(string)
   })
   default = {
     enabled = false
   }
   validation {
-    condition = var.pip_config.allocation_method == null || var.pip_config.allocation_method in [
+    condition = var.public_ip_config.allocation_method == null || var.public_ip_config.allocation_method in [
       Static, 
       Dynamic
     ]
   }
+  description = "All the information needed for the creation of a public ip. As default no public ip will be created."
 }
-
-### variables with default ###
 
 variable "nic_config" {
   type = object({
@@ -28,9 +24,10 @@ variable "nic_config" {
       dns_servers = optional(list(string))
       nsg_id = optional(string)
   })
+  description = "All the Information needed for the creation of the network interface."
 }
 
-variable "vm_config" {
+variable "virtual_machine_config" {
   type = object({
       hostname = string
       admin_username = string
@@ -40,56 +37,63 @@ variable "vm_config" {
       location = optional(string)
       availability_set_id = optional(string)
       zone = optional(string)
-      disk_caching = optional(string, "ReadWrite")
-      disk_storage_type = optional(string)
-      disk_size_gb = optional(number)
+      os_disk_caching = optional(string, "ReadWrite")
+      os_disk_storage_type = optional(string, "Standard_LRS")
+      os_disk_size_gb = optional(number, 64)
       tags = optional(map(string))
   })
   validation {
-    condition = var.vm_config.disk_caching == null || var.vm_config.disk_caching in [
+    condition = var.virtual_machine_config.disk_caching == null || var.virtual_machine_config.disk_caching in [
       None,
       ReadOnly,
       ReadWrite
     ]
   }
+  description =   description = "All the Information needed for the creation of the virtual machine."
 }
 
 variable "admin_password" {
   type = string
   sensitive = true
+  description = "Password of the local administrator."
 }
 
+
 variable "data_disks" {
-  description = "All need data for data disk creation"
   type = list(object({
     disk_size_gb              = number
     storage_account_type      = string
     caching                   = optional(string, "None")
     create_option             = optional(string, "Empty")
   }))
+    description = "All need data for data disk creation."
 }
 
 variable "resource_group" {
   type = any
+  description = "Resource Group in which the resources are created."
 }
 
 variable "name_overrides" {
   type = object({
       nic = optional(string)
       nic_ip_config = optional(string)
-      pip = optional(string)
-      vm = optional(string)
-      extra_disk = optional(string)
+      public_ip = optional(string)
+      virtual_machine = optional(string)
   })
+  description = "Possibility to override names that will be generated according to our naming convention."
 }
 
 variable "law_monitoranddiagnostics_workspace_id" {
   type = string
   default = null 
+  description = "ID of the log analytics workspace to wich date will be send from the monitoring agent extension"
 }
 
 variable "law_monitoranddiagnostics_primary_shared_key" {
   type = string
   sensitive = true 
   default = null
+  description = "Shared key of the log analytics workspace to wich date will be send from the monitoring agent extension"
+
 }

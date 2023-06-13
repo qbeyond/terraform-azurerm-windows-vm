@@ -1,9 +1,9 @@
 resource "azurerm_public_ip" "this" {
-  count               = local.pip.enabled ? 1 : 0
-  name                = local.pip.name
+  count               = local.public_ip.enabled ? 1 : 0
+  name                = local.public_ip.name
   resource_group_name = var.resource_group.name
-  location            = local.pip.location
-  allocation_method   = local.pip.allocation_method
+  location            = local.public_ip.location
+  allocation_method   = local.public_ip.allocation_method
 
   lifecycle {
     ignore_changes = [
@@ -21,9 +21,9 @@ resource "azurerm_network_interface" "this" {
   ip_configuration {
     name                          = local.nic.ip_config_name
     subnet_id                     = local.nic.subnet_id
-    private_ip_address_allocation = local.nic.ip_addr_allocation
-    private_ip_address            = local.nic.ip_addr
-    public_ip_address_id          = local.pip.enabled ? azurerm_public_ip.this[0].id : null
+    private_ip_address_allocation = local.nic.ip_address_allocation
+    private_ip_address            = local.nic.ip_address
+    public_ip_address_id          = local.public_ip.enabled ? azurerm_public_ip.this[0].id : null
   }
 
   lifecycle {
@@ -40,33 +40,34 @@ resource "azurerm_network_interface_security_group_association" "this" {
 }
 
 resource "azurerm_windows_virtual_machine" "this" {
-  name                     = local.vm.name
-  computer_name            = local.vm.computer_name
-  location                 = local.vm.location
+  name                     = local.virtual_machine.name
+  computer_name            = local.virtual_machine.computer_name
+  location                 = local.virtual_machine.location
   resource_group_name      = var.resource_group.name
-  size                     = local.vm.size
+  size                     = local.virtual_machine.size
   provision_vm_agent = true
-  admin_username           = local.vm.admin_username
+  admin_username           = local.virtual_machine.admin_username
   admin_password           = var.admin_password
   network_interface_ids = [
     azurerm_network_interface.this.id,
   ]
 
   os_disk {
-    caching              = local.vm.caching
-    storage_account_type = local.vm.storage_account_type
-    disk_size_gb         = local.vm.disk_size_gb
+    caching              = local.virtual_machine.caching
+    storage_account_type = local.virtual_machine.storage_account_type
+    disk_size_gb         = local.virtual_machine.disk_size_gb
   }
 
   source_image_reference {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
-    sku       = local.vm.sku
-    version   = local.vm.version
+    sku       = local.virtual_machine.sku
+    version   = local.virtual_machine.version
   }
 
-  availability_set_id = local.vm.availability_set_id
-  zone                = local.vm.zone
+  availability_set_id = local.virtual_machine.availability_set_id
+  zone                = local.virtual_machine.zone
+  tags                = local.virtual_machine.tags
 
   lifecycle {
     prevent_destroy = true

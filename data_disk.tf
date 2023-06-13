@@ -1,12 +1,12 @@
 resource "azurerm_managed_disk" "data_disk" {
   count                = length(var.data_disks)
-  name                 = "${var.vm_config.hostname}-datadisk-${format("%02d", count.index)}"
-  location             = local.vm.location
+  name                 = "${var.virtual_machine_config.hostname}-datadisk-${format("%02d", count.index)}"
+  location             = local.virtual_machine.location
   resource_group_name  = var.resource_group.name
   storage_account_type = var.data_disks[count.index].storage_account_type
   create_option        = var.data_disks[count.index].create_option
   disk_size_gb         = var.data_disks[count.index].disk_size_gb
-  zone                 = var.vm_config.zone == null ? null : [var.vm_config.zone]
+  zone                 = var.virtual_machine_config.zone == null ? null : [var.virtual_machine_config.zone]
 
   lifecycle {
   ignore_changes = [

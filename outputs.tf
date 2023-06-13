@@ -1,3 +1,3 @@
-output "vm" {
-  value = azurerm_windows_virtual_machine.vm
+output "virtual_machine" {
+  value = azurerm_windows_virtual_machine.this
 }

@@ -8,10 +8,11 @@ variable "public_ip_config" {
     enabled = false
   }
   validation {
-    condition = var.public_ip_config.allocation_method == null || var.public_ip_config.allocation_method in [
-      Static, 
-      Dynamic
+    condition =  var.public_ip_config.allocation_method in [
+      "Static", 
+      "Dynamic"
     ]
+    error_message = "Allocation method must be Static or Dynamic"
   }
   description = "All the information needed for the creation of a public ip. As default no public ip will be created."
 }
@@ -43,13 +44,14 @@ variable "virtual_machine_config" {
       tags = optional(map(string))
   })
   validation {
-    condition = var.virtual_machine_config.disk_caching == null || var.virtual_machine_config.disk_caching in [
+    condition = var.virtual_machine_config.disk_caching in [
       None,
       ReadOnly,
       ReadWrite
     ]
+    error_message = "Disk caching must be None, Readonly or ReadWrite"
   }
-  description =   description = "All the Information needed for the creation of the virtual machine."
+  description = "All the Information needed for the creation of the virtual machine."
 }
 
 variable "admin_password" {

@@ -23,6 +23,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "data_disk" {
   caching            = var.data_disks.caching
 
   lifecycle {
+  prevent_destroy = var.prevent_destroy.data_disks
   ignore_changes = [
     tags
   ]

@@ -95,5 +95,12 @@ variable "law_monitoranddiagnostics_primary_shared_key" {
   sensitive = true 
   default = null
   description = "Shared key of the log analytics workspace to wich date will be send from the monitoring agent extension"
+}
 
+variable "prevent_destroy" {
+  type = object({
+    data_disks = optional(bool, true)
+    virtual_machine = optional(bool, true)
+  })
+  description = "Parameter sets lifecyle option 'prevent_destroy' to true per default. If you want to delete the resources, the variable needs to be set to 'false'."
 }

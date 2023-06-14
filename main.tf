@@ -70,7 +70,7 @@ resource "azurerm_windows_virtual_machine" "this" {
   tags                = local.virtual_machine.tags
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = var.prevent_destroy.virtual_machine
     ignore_changes = [
       identity,
       tags

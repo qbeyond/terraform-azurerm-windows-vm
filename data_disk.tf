@@ -9,8 +9,9 @@ resource "azurerm_managed_disk" "data_disk" {
   zone                 = var.virtual_machine_config.zone == null ? null : [var.virtual_machine_config.zone]
 
   lifecycle {
-  ignore_changes = [
-    tags
+    prevent_destroy = true
+    ignore_changes = [
+      tags
   ]
   }
 }
@@ -23,7 +24,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "data_disk" {
   caching            = var.data_disks.caching
 
   lifecycle {
-  prevent_destroy = var.prevent_destroy.data_disks
+  prevent_destroy = true
   ignore_changes = [
     tags
   ]

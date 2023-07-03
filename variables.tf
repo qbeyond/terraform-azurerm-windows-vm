@@ -2,56 +2,108 @@ variable "public_ip_config" {
   type = object({
       enabled = bool
       allocation_method = optional(string, "Static")
-      location = optional(string)
   })
   default = {
     enabled = false
   }
   validation {
-    condition =  var.public_ip_config.allocation_method in [
-      "Static", 
-      "Dynamic"
-    ]
+    condition =  contains(["Static","Dynamic"], var.public_ip_config.allocation_method)
     error_message = "Allocation method must be Static or Dynamic"
   }
-  description = "All the information needed for the creation of a public ip. As default no public ip will be created."
-}
+  description = <<-DOC
+  ```
+   "public_ip_config" = {
+    enabled: Optionally select true if a public ip should be created. Defaults to false.
+    allocation_method: The allocation method of the public ip that will be created. Defaults to static.      
+   }
+  ```
+  DOC
+} 
+
 
 variable "nic_config" {
   type = object({
-      subnet = any
-      location = optional(string)
       private_ip = optional(string)
       dns_servers = optional(list(string))
       nsg_id = optional(string)
   })
-  description = "All the Information needed for the creation of the network interface."
+  description = <<-DOC
+  ```
+   "nic_config" = {
+    private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.
+    dns_servers: Optionally specify a list of dns servers for the nic.
+    nsg_id: Optinally specify the id of a network security group that will be assigned to the nic.    
+   }
+  ```
+  DOC
 }
+
+variable "subnet" {
+  type = object ({
+    id = string
+    prefix = string
+  })
+  description = <<-DOC
+  ```
+   "subnet" = {
+    id: Specify the id of the subnet for the virtual machine.
+    prefix: Prefix of the given subnet.
+   }
+  ```
+  DOC
+  }
 
 variable "virtual_machine_config" {
   type = object({
       hostname = string
-      admin_username = string
-      size = any
+      size = string 
       os_sku = string
-      os_version = string
-      location = optional(string)
+      location = string
       availability_set_id = optional(string)
       zone = optional(string)
+      os_version = optional(string, "latest") 
+      admin_username = optional(string, "loc_sysadmin") 
       os_disk_caching = optional(string, "ReadWrite")
-      os_disk_storage_type = optional(string, "Standard_LRS")
+      os_disk_storage_type = optional(string, "StandardSSD_LRS")
       os_disk_size_gb = optional(number, 64)
-      tags = optional(map(string))
+      tags = optional(map(string)) 
+      write_accelerator_enabled = optional(bool, false) 
   })
   validation {
-    condition = var.virtual_machine_config.disk_caching in [
-      None,
-      ReadOnly,
-      ReadWrite
-    ]
-    error_message = "Disk caching must be None, Readonly or ReadWrite"
+    condition = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)
+    error_message = "Possible values are None, ReadOnly and ReadWrite" 
   }
-  description = "All the Information needed for the creation of the virtual machine."
+  validation {
+    condition = contains(["Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "StandardSSD_ZRS", "Premium_ZRS"],var.virtual_machine_config.os_disk_storage_type)
+    error_message = "Possible values are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS"
+  }
+  description = <<-DOC
+  ```
+   "virtual_machine_config" = {
+    size: The size of the vm. Possible values can be seen here: https://learn.microsoft.com/en-us/azure/virtual-machines/sizes
+    os_sku: The os that will be running on the vm.
+    location: The location of the virtual machine.
+    availability_set_id: Optionally specify an availibilty set for the vm.
+    zone: Optionally specify an availibility zone for the vm. 
+    os_version: Optionally specify an os version for the chosen sku. Defaults to latest.
+    admin_username: Optionally choose the admin_username of the vm. Defaults to loc_sysadmin. 
+      The local admin name could be changed by the gpo in the target ad.
+    os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.
+    os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.
+    os_disk_size_gb: Optionally change the size of the os disk. Defaults to 64 gb.
+    tags: Optionally specify tags in as a map.
+    write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
+      be activated on Premium_LRS disks and caching deactivated. Defaults to false.
+   }
+  ```
+  DOC
+}
+
+variable "severity_group" {
+  type = string
+  #validation = regex(yeah)
+  default = ""
+  description = "The severity group of the virtual machine."
 }
 
 variable "admin_password" {
@@ -61,19 +113,38 @@ variable "admin_password" {
 }
 
 
-variable "data_disks" {
-  type = list(object({
+variable "data_disks" { # change to map of objects
+  type = map(object({
+    name                      = string
     disk_size_gb              = number
-    storage_account_type      = string
+    storage_account_type      = optional(string, "StandardSSD_LRS")
     caching                   = optional(string, "None")
     create_option             = optional(string, "Empty")
-  }))
-    description = "All need data for data disk creation."
+    write_accelerator_enabled = optional(bool, false)
+ }))
+  default = {}
+  validation {
+    condition = alltrue([ for key in keys(var.data_disks): can(parseint(key, 10)) ])
+    error_message = "Data Disk Key must be a number."
+  }
+  description = <<-DOC
+  ```
+   "data_disks" = {
+    name: Specify the name of the data disk.
+    disk_size_gb: The size of the data disk.
+    storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.
+    caching: Optionally activate disk caching. Defaults to None.
+    create_option: Optionally change the create option. Defaults to Empty disk.
+    write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only
+      be activated on Premium_LRS disks and caching deactivated. Defaults to false.
+   }
+  ```
+  DOC
 }
 
-variable "resource_group" {
-  type = any
-  description = "Resource Group in which the resources are created."
+variable "resource_group_name" {
+  type = string
+  description = "Name of the resource group where the resources will be created."
 }
 
 variable "name_overrides" {
@@ -83,26 +154,21 @@ variable "name_overrides" {
       public_ip = optional(string)
       virtual_machine = optional(string)
   })
-  description = "Possibility to override names that will be generated according to our naming convention."
+  description = "Possibility to override names that will be generated according to q.beyond naming convention."
 }
 
-variable "law_monitoranddiagnostics_workspace_id" {
-  type = string
-  default = null 
-  description = "ID of the log analytics workspace to wich date will be send from the monitoring agent extension"
-}
-
-variable "law_monitoranddiagnostics_primary_shared_key" {
-  type = string
-  sensitive = true 
-  default = null
-  description = "Shared key of the log analytics workspace to wich date will be send from the monitoring agent extension"
-}
-
-variable "prevent_destroy" {
+variable "law_config" {
   type = object({
-    data_disks = optional(bool, true)
-    virtual_machine = optional(bool, true)
+    workspace_id = string
+    shared_key = string
   })
-  description = "Parameter sets lifecyle option 'prevent_destroy' to true per default. If you want to delete the resources, the variable needs to be set to 'false'."
+  sensitive = true 
+  default = null 
+  description = <<-DOC
+  ```
+   "law_config" = {
+    workspace_id: Specify id of the log analytics workspace to which moniring data will be sent.
+    shared_key: The shared_key to of the log analytics workspace.
+  ```
+  DOC
 }

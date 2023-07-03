@@ -6,7 +6,7 @@
 
 This is a template module. It just showcases how a module should look. This would be a short description of the module.
 
-Ich bin ein Modul
+This module will create a windows virtual machine, a network interface and associates the network interface to the target subnet. Optionally one or more data disks and a public ip can be created. 
 
 <!-- BEGIN_TF_DOCS -->
 ## Usage

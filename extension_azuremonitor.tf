@@ -1,5 +1,5 @@
 resource "azurerm_virtual_machine_extension" "microsoftmonitoringagent" {
-  count                      = length(var.law_monitoranddiagnostics_workspace_id[*]) != 0 ? 1 : 0
+  count                      = length(var.law_config.workspace_id[*]) != 0 ? 1 : 0
   name                       = "MicrosoftMonitoringAgent"
   virtual_machine_id         = azurerm_windows_virtual_machine.this.id
   publisher                  = "Microsoft.EnterpriseCloud.Monitoring"
@@ -9,13 +9,13 @@ resource "azurerm_virtual_machine_extension" "microsoftmonitoringagent" {
 
   settings = <<SETTINGS
     {
-       "workspaceId" : "${var.law_monitoranddiagnostics_workspace_id}"
+       "workspaceId" : "${var.law_config.workspace_id}"
     }
 SETTINGS
 
   protected_settings = <<PROTECTED_SETTINGS
     {
-       "workspaceKey" : "${var.law_monitoranddiagnostics_primary_shared_key}"
+       "workspaceKey" : "${var.law_config.shared_key}"
     }
 PROTECTED_SETTINGS
 

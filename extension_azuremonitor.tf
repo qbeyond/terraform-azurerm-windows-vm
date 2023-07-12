@@ -1,5 +1,5 @@
 resource "azurerm_virtual_machine_extension" "microsoftmonitoringagent" {
-  count                      = length(var.law_config.workspace_id[*]) != 0 ? 1 : 0
+  count                      = var.law_config != null ? 1 : 0
   name                       = "MicrosoftMonitoringAgent"
   virtual_machine_id         = azurerm_windows_virtual_machine.this.id
   publisher                  = "Microsoft.EnterpriseCloud.Monitoring"

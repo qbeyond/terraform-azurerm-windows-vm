@@ -26,7 +26,9 @@ variable "nic_config" {
       private_ip = optional(string)
       dns_servers = optional(list(string))
       nsg_id = optional(string)
+      nsg_link = optional(bool)
   })
+  default = {}
   description = <<-DOC
   ```
    "nic_config" = {
@@ -41,16 +43,9 @@ variable "nic_config" {
 variable "subnet" {
   type = object ({
     id = string
-    prefix = string
+    address_prefixes = list(string)
   })
-  description = <<-DOC
-  ```
-   "subnet" = {
-    id: Specify the id of the subnet for the virtual machine.
-    prefix: Prefix of the given subnet.
-   }
-  ```
-  DOC
+  description = "The variable takes the subnet as input and takes the id and the address prefix for further configuration."
   }
 
 variable "virtual_machine_config" {
@@ -65,7 +60,7 @@ variable "virtual_machine_config" {
       admin_username = optional(string, "loc_sysadmin") 
       os_disk_caching = optional(string, "ReadWrite")
       os_disk_storage_type = optional(string, "StandardSSD_LRS")
-      os_disk_size_gb = optional(number, 64)
+      os_disk_size_gb = optional(number, 127)
       tags = optional(map(string)) 
       write_accelerator_enabled = optional(bool, false) 
   })
@@ -155,6 +150,7 @@ variable "name_overrides" {
       virtual_machine = optional(string)
   })
   description = "Possibility to override names that will be generated according to q.beyond naming convention."
+  default = {}
 }
 
 variable "law_config" {
@@ -163,7 +159,7 @@ variable "law_config" {
     shared_key = string
   })
   sensitive = true 
-  default = null 
+  default = null
   description = <<-DOC
   ```
    "law_config" = {

@@ -1,15 +1,37 @@
+provider "azurerm" {
+  features {}
+}
+
 module "virtual_machine" {
-    source = "git::https://github.com/qbeyond/terraform-azurerm-domain-controller"
-    nic_config = {
-        subnet = azurerm_subnet.snet
-    }
-    virtual_machine_config {
+    source = "../.."
+    virtual_machine_config = {
         hostname = "CUSTAPP001"
+        location = local.location
         admin_username = "local_admin"
         size = "Standard_D2_v5"
         os_sku = "2022-Datacenter"
         os_version = "latest"
     }
-    admin_password = "password123"
-    resource_group = azurerm_resource_group.vm 
+    admin_password = "H3ll0W0rld!"
+    resource_group_name = azurerm_resource_group.this.name
+    subnet = azurerm_subnet.this
+}
+
+resource "azurerm_resource_group" "this" {
+  name = local.resource_group_name
+  location = local.location
+}
+
+resource "azurerm_virtual_network" "this" {
+  name = local.virtual_network_name
+  address_space = [ "10.0.0.0/24" ]
+  location = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+}
+
+resource "azurerm_subnet" "this" {
+  name = local.subnet_name
+  resource_group_name = azurerm_resource_group.this.name
+  virtual_network_name = azurerm_virtual_network.this.name
+  address_prefixes = [ "10.0.0.0/24" ]
 }

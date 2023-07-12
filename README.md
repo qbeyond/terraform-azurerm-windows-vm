@@ -13,20 +13,42 @@ This module will create a windows virtual machine, a network interface and assoc
 
 It's very easy to use!
 ```hcl
+provider "azurerm" {
+  features {}
+}
+
 module "virtual_machine" {
-    source = "git::https://github.com/qbeyond/terraform-azurerm-domain-controller"
-    nic_config = {
-        subnet = azurerm_subnet.snet
-    }
-    virtual_machine_config {
+    source = "../.."
+    virtual_machine_config = {
         hostname = "CUSTAPP001"
+        location = local.location
         admin_username = "local_admin"
         size = "Standard_D2_v5"
         os_sku = "2022-Datacenter"
         os_version = "latest"
     }
-    admin_password = "password123"
-    resource_group = azurerm_resource_group.vm 
+    admin_password = "H3ll0W0rld!"
+    resource_group_name = azurerm_resource_group.this.name
+    subnet = azurerm_subnet.this
+}
+
+resource "azurerm_resource_group" "this" {
+  name = local.resource_group_name
+  location = local.location
+}
+
+resource "azurerm_virtual_network" "this" {
+  name = local.virtual_network_name
+  address_space = [ "10.0.0.0/24" ]
+  location = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+}
+
+resource "azurerm_subnet" "this" {
+  name = local.subnet_name
+  resource_group_name = azurerm_resource_group.this.name
+  virtual_network_name = azurerm_virtual_network.this.name
+  address_prefixes = [ "10.0.0.0/24" ]
 }
 ```
 
@@ -41,14 +63,14 @@ module "virtual_machine" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_admin_password"></a> [admin\_password](#input\_admin\_password) | Password of the local administrator. | `string` | n/a | yes |
-| <a name="input_name_overrides"></a> [name\_overrides](#input\_name\_overrides) | Possibility to override names that will be generated according to q.beyond naming convention. | <pre>object({<br>      nic = optional(string)<br>      nic_ip_config = optional(string)<br>      public_ip = optional(string)<br>      virtual_machine = optional(string)<br>  })</pre> | n/a | yes |
-| <a name="input_nic_config"></a> [nic\_config](#input\_nic\_config) | <pre>"nic_config" = {<br>  private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.<br>  dns_servers: Optionally specify a list of dns servers for the nic.<br>  nsg_id: Optinally specify the id of a network security group that will be assigned to the nic.    <br> }</pre> | <pre>object({<br>      private_ip = optional(string)<br>      dns_servers = optional(list(string))<br>      nsg_id = optional(string)<br>  })</pre> | n/a | yes |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Name of the resource group where the resources will be created. | `string` | n/a | yes |
-| <a name="input_subnet"></a> [subnet](#input\_subnet) | <pre>"subnet" = {<br>  id: Specify the id of the subnet for the virtual machine.<br>  prefix: Prefix of the given subnet.<br> }</pre> | <pre>object ({<br>    id = string<br>    prefix = string<br>  })</pre> | n/a | yes |
-| <a name="input_virtual_machine_config"></a> [virtual\_machine\_config](#input\_virtual\_machine\_config) | <pre>"virtual_machine_config" = {<br>  size: The size of the vm. Possible values can be seen here: https://learn.microsoft.com/en-us/azure/virtual-machines/sizes<br>  os_sku: The os that will be running on the vm.<br>  location: The location of the virtual machine.<br>  availability_set_id: Optionally specify an availibilty set for the vm.<br>  zone: Optionally specify an availibility zone for the vm. <br>  os_version: Optionally specify an os version for the chosen sku. Defaults to latest.<br>  admin_username: Optionally choose the admin_username of the vm. Defaults to loc_sysadmin. <br>    The local admin name could be changed by the gpo in the target ad.<br>  os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.<br>  os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.<br>  os_disk_size_gb: Optionally change the size of the os disk. Defaults to 64 gb.<br>  tags: Optionally specify tags in as a map.<br>  write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only<br>    be activated on Premium_LRS disks and caching deactivated. Defaults to false.<br> }</pre> | <pre>object({<br>      hostname = string<br>      size = string <br>      os_sku = string<br>      location = string<br>      availability_set_id = optional(string)<br>      zone = optional(string)<br>      os_version = optional(string, "latest") <br>      admin_username = optional(string, "loc_sysadmin") <br>      os_disk_caching = optional(string, "ReadWrite")<br>      os_disk_storage_type = optional(string, "StandardSSD_LRS")<br>      os_disk_size_gb = optional(number, 64)<br>      tags = optional(map(string)) <br>      write_accelerator_enabled = optional(bool, false) <br>  })</pre> | n/a | yes |
-| <a name="input_data_disks"></a> [data\_disks](#input\_data\_disks) | <pre>"data_disks" = {<br>  name: Specify the name of the data disk.<br>  disk_size_gb: The size of the data disk.<br>  storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.<br>  caching: Optionally activate disk caching. Defaults to None.<br>  create_option: Optionally change the create option. Defaults to Empty disk.<br>  write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only<br>    be activated on Premium_LRS disks and caching deactivated. Defaults to false.<br> }</pre> | <pre>map(object({<br>    name                      = string<br>    disk_size_gb              = number<br>    storage_account_type      = optional(string, "StandardSSD_LRS")<br>    caching                   = optional(string, "None")<br>    create_option             = optional(string, "Empty")<br>    write_accelerator_enabled = optional(bool, false)<br> }))</pre> | `{}` | no |
-| <a name="input_law_config"></a> [law\_config](#input\_law\_config) | <pre>"law_config" = {<br>  workspace_id: Specify id of the log analytics workspace to which moniring data will be sent.<br>  shared_key: The shared_key to of the log analytics workspace.</pre> | <pre>object({<br>    workspace_id = string<br>    shared_key = string<br>  })</pre> | `null` | no |
-| <a name="input_public_ip_config"></a> [public\_ip\_config](#input\_public\_ip\_config) | <pre>"public_ip_config" = {<br>  enabled: Optionally select true if a public ip should be created. Defaults to false.<br>  allocation_method: The allocation method of the public ip that will be created. Defaults to static.      <br> }</pre> | <pre>object({<br>      enabled = bool<br>      allocation_method = optional(string, "Static")<br>  })</pre> | <pre>{<br>  "enabled": false<br>}</pre> | no |
+| <a name="input_subnet"></a> [subnet](#input\_subnet) | The variable takes the subnet as input and takes the id and the address prefix for further configuration. | <pre>object ({<br>    id = string<br>    address_prefixes = list(string)<br>  })</pre> | n/a | yes |
+| <a name="input_virtual_machine_config"></a> [virtual\_machine\_config](#input\_virtual\_machine\_config) | <pre>size: The size of the vm. Possible values can be seen here: https://learn.microsoft.com/en-us/azure/virtual-machines/sizes<br>  os_sku: The os that will be running on the vm.<br>  location: The location of the virtual machine.<br>  availability_set_id: Optionally specify an availibilty set for the vm.<br>  zone: Optionally specify an availibility zone for the vm. <br>  os_version: Optionally specify an os version for the chosen sku. Defaults to latest.<br>  admin_username: Optionally choose the admin_username of the vm. Defaults to loc_sysadmin. <br>    The local admin name could be changed by the gpo in the target ad.<br>  os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.<br>  os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.<br>  os_disk_size_gb: Optionally change the size of the os disk. Defaults to be specified by image.<br>  tags: Optionally specify tags in as a map.<br>  write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only<br>    be activated on Premium_LRS disks and caching deactivated. Defaults to false.</pre> | <pre>object({<br>      hostname = string<br>      size = string <br>      os_sku = string<br>      location = string<br>      availability_set_id = optional(string)<br>      zone = optional(string)<br>      os_version = optional(string, "latest") <br>      admin_username = optional(string, "loc_sysadmin") <br>      os_disk_caching = optional(string, "ReadWrite")<br>      os_disk_storage_type = optional(string, "StandardSSD_LRS")<br>      os_disk_size_gb = optional(number)<br>      tags = optional(map(string)) <br>      write_accelerator_enabled = optional(bool, false) <br>  })</pre> | n/a | yes |
+| <a name="input_data_disks"></a> [data\_disks](#input\_data\_disks) | <pre><name of the data disk> = {<br>  lun: Number of the lun.<br>  disk_size_gb: The size of the data disk.<br>  storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.<br>  caching: Optionally activate disk caching. Defaults to None.<br>  create_option: Optionally change the create option. Defaults to Empty disk.<br>  write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only<br>    be activated on Premium_LRS disks and caching deactivated. Defaults to false.<br> }</pre> | <pre>map(object({<br>    lun                       = number<br>    disk_size_gb              = number<br>    storage_account_type      = optional(string, "StandardSSD_LRS")<br>    caching                   = optional(string, "None")<br>    create_option             = optional(string, "Empty")<br>    write_accelerator_enabled = optional(bool, false)<br> }))</pre> | `{}` | no |
+| <a name="input_log_analytics_agent"></a> [log\_analytics\_agent](#input\_log\_analytics\_agent) | <pre>Installs the log analytics agent(MicrosoftMonitoringAgent).<br>  workspace_id: Specify id of the log analytics workspace to which monitoring data will be sent.<br>  shared_key: The Primary shared key for the Log Analytics Workspace..</pre> | <pre>object({<br>    workspace_id = string<br>    primary_shared_key = string <br>  })</pre> | `null` | no |
+| <a name="input_name_overrides"></a> [name\_overrides](#input\_name\_overrides) | Possibility to override names that will be generated according to q.beyond naming convention. | <pre>object({<br>      nic = optional(string)<br>      nic_ip_config = optional(string)<br>      public_ip = optional(string)<br>      virtual_machine = optional(string)<br>  })</pre> | `{}` | no |
+| <a name="input_nic_config"></a> [nic\_config](#input\_nic\_config) | <pre>private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.<br>  dns_servers: Optionally specify a list of dns servers for the nic.<br>  nsg_id: Optinally specify the id of a network security group that will be assigned to the nic.</pre> | <pre>object({<br>      private_ip = optional(string)<br>      dns_servers = optional(list(string))<br>      nsg = optional(object({<br>        id = string<br>      }))<br>  })</pre> | `{}` | no |
+| <a name="input_public_ip_config"></a> [public\_ip\_config](#input\_public\_ip\_config) | <pre>enabled: Optionally select true if a public ip should be created. Defaults to false.<br>  allocation_method: The allocation method of the public ip that will be created. Defaults to static.</pre> | <pre>object({<br>      enabled = bool<br>      allocation_method = optional(string, "Static")<br>  })</pre> | <pre>{<br>  "enabled": false<br>}</pre> | no |
 | <a name="input_severity_group"></a> [severity\_group](#input\_severity\_group) | The severity group of the virtual machine. | `string` | `""` | no |
 ## Outputs
 

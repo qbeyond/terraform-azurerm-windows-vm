@@ -34,9 +34,9 @@ resource "azurerm_network_interface" "this" {
 }
 
 resource "azurerm_network_interface_security_group_association" "this" {
-  count = var.nic_config.nsg_link == true ? 1 : 0
+  count = var.nic_config.nsg != null ? 1 : 0
   network_interface_id = azurerm_network_interface.this.id
-  network_security_group_id = var.nic_config.nsg_id
+  network_security_group_id = var.nic_config.nsg.id
 }
 
 resource "azurerm_windows_virtual_machine" "this" {
@@ -67,7 +67,7 @@ resource "azurerm_windows_virtual_machine" "this" {
 
   availability_set_id = var.virtual_machine_config.availability_set_id
   zone                = var.virtual_machine_config.zone
-  tags                = var.virtual_machine_config.tags
+  tags                = merge(var.virtual_machine_config.tags, {"Severity Group Monthly" = var.severity_group})
 
   lifecycle {
     prevent_destroy = true

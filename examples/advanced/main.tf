@@ -11,8 +11,7 @@ module "virtual_machine" {
   nic_config = {
     private_ip = "10.0.0.16"
     dns_servers = [ "10.0.0.10", "10.0.0.11" ]
-    nsg_id = azurerm_network_security_group.this.id
-    nsg_link = true
+    nsg = azurerm_network_security_group.this
   }
   virtual_machine_config = {
     hostname = "CUSTAPP007"
@@ -26,7 +25,7 @@ module "virtual_machine" {
     os_disk_storage_type = "StandardSSD_LRS"
     os_disk_size_gb = 128
     tags = {
-      "Environment" = "Prod" 
+      "Environment" = "prd" 
     }
     write_accelerator_enabled = false
   }
@@ -34,8 +33,8 @@ module "virtual_machine" {
   resource_group_name = azurerm_resource_group.this.name
   subnet = azurerm_subnet.this
   data_disks = {
-    1 = {
-        name = local.managed_disk_name
+    "${local.managed_disk_name}" = {
+        lun = 1
         caching = "ReadWrite"
         disk_size_gb = 64
         create_option = "Empty"
@@ -43,6 +42,8 @@ module "virtual_machine" {
         write_accelerator_enabled = false
     }
   }
+
+  log_analytics_agent = azurerm_log_analytics_workspace.this
 
   name_overrides = {
     nic = local.nic
@@ -93,4 +94,12 @@ resource "azurerm_network_security_group" "this" {
     source_address_prefix = "*"
     destination_address_prefix = "*"
   }
+}
+
+resource "azurerm_log_analytics_workspace" "this" {
+  name = local.law_name
+  location = local.location
+  resource_group_name = azurerm_resource_group.this.name
+  sku = "PerGB2018"
+  retention_in_days = 30
 }

@@ -12,30 +12,26 @@ variable "public_ip_config" {
   }
   description = <<-DOC
   ```
-   "public_ip_config" = {
     enabled: Optionally select true if a public ip should be created. Defaults to false.
     allocation_method: The allocation method of the public ip that will be created. Defaults to static.      
-   }
   ```
   DOC
 } 
-
 
 variable "nic_config" {
   type = object({
       private_ip = optional(string)
       dns_servers = optional(list(string))
-      nsg_id = optional(string)
-      nsg_link = optional(bool)
+      nsg = optional(object({
+        id = string
+      }))
   })
   default = {}
   description = <<-DOC
   ```
-   "nic_config" = {
     private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.
     dns_servers: Optionally specify a list of dns servers for the nic.
     nsg_id: Optinally specify the id of a network security group that will be assigned to the nic.    
-   }
   ```
   DOC
 }
@@ -60,7 +56,7 @@ variable "virtual_machine_config" {
       admin_username = optional(string, "loc_sysadmin") 
       os_disk_caching = optional(string, "ReadWrite")
       os_disk_storage_type = optional(string, "StandardSSD_LRS")
-      os_disk_size_gb = optional(number, 127)
+      os_disk_size_gb = optional(number)
       tags = optional(map(string)) 
       write_accelerator_enabled = optional(bool, false) 
   })
@@ -74,7 +70,6 @@ variable "virtual_machine_config" {
   }
   description = <<-DOC
   ```
-   "virtual_machine_config" = {
     size: The size of the vm. Possible values can be seen here: https://learn.microsoft.com/en-us/azure/virtual-machines/sizes
     os_sku: The os that will be running on the vm.
     location: The location of the virtual machine.
@@ -85,11 +80,10 @@ variable "virtual_machine_config" {
       The local admin name could be changed by the gpo in the target ad.
     os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.
     os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.
-    os_disk_size_gb: Optionally change the size of the os disk. Defaults to 64 gb.
+    os_disk_size_gb: Optionally change the size of the os disk. Defaults to be specified by image.
     tags: Optionally specify tags in as a map.
     write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
       be activated on Premium_LRS disks and caching deactivated. Defaults to false.
-   }
   ```
   DOC
 }
@@ -110,22 +104,22 @@ variable "admin_password" {
 
 variable "data_disks" { # change to map of objects
   type = map(object({
-    name                      = string
+    lun                       = number
     disk_size_gb              = number
     storage_account_type      = optional(string, "StandardSSD_LRS")
     caching                   = optional(string, "None")
     create_option             = optional(string, "Empty")
     write_accelerator_enabled = optional(bool, false)
  }))
+ validation {
+   condition = length([for v in var.data_disks : v.lun]) == length(distinct([for v in var.data_disks : v.lun]))
+   error_message = "One or more of the lun parameters in the map are duplicates."
+ }
   default = {}
-  validation {
-    condition = alltrue([ for key in keys(var.data_disks): can(parseint(key, 10)) ])
-    error_message = "Data Disk Key must be a number."
-  }
   description = <<-DOC
   ```
-   "data_disks" = {
-    name: Specify the name of the data disk.
+   <name of the data disk> = {
+    lun: Number of the lun.
     disk_size_gb: The size of the data disk.
     storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.
     caching: Optionally activate disk caching. Defaults to None.
@@ -153,18 +147,18 @@ variable "name_overrides" {
   default = {}
 }
 
-variable "law_config" {
+variable "log_analytics_agent" {
   type = object({
     workspace_id = string
-    shared_key = string
+    primary_shared_key = string 
   })
   sensitive = true 
   default = null
   description = <<-DOC
   ```
-   "law_config" = {
-    workspace_id: Specify id of the log analytics workspace to which moniring data will be sent.
-    shared_key: The shared_key to of the log analytics workspace.
+    Installs the log analytics agent(MicrosoftMonitoringAgent).
+    workspace_id: Specify id of the log analytics workspace to which monitoring data will be sent.
+    shared_key: The Primary shared key for the Log Analytics Workspace..
   ```
   DOC
 }

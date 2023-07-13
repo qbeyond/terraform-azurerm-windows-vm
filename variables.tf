@@ -26,11 +26,13 @@ variable "nic_config" {
         id = string
       }))
   })
-  default = {}
+  default = {
+    dns_servers = [ "168.63.129.16" ]
+  }
   description = <<-DOC
   ```
     private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.
-    dns_servers: Optionally specify a list of dns servers for the nic.
+    dns_servers: Optionally specify a list of dns servers for the nic. If not specified the default is the Azure DNS IP.
     nsg_id: Optinally specify the id of a network security group that will be assigned to the nic.    
   ```
   DOC

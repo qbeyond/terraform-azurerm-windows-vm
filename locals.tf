@@ -4,7 +4,7 @@ locals {
   }
 
   nic = {
-      name = coalesce(var.name_overrides.nic, replace("nic-${var.virtual_machine_config.hostname}-${var.subnet.address_prefixes[0]}", "/[./]/", "-"))
+      name = coalesce(var.name_overrides.nic, "nic-${var.virtual_machine_config.hostname}-${replace(var.subnet.address_prefixes[0], "/[./]/", "-")}")
       ip_config_name = coalesce(var.name_overrides.nic_ip_config, "internal")
   }
 

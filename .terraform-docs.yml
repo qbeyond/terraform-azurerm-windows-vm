@@ -42,9 +42,12 @@ content: |-
   {{ indent 0 "#" }} Usage
 
   This module provisions a windows virtual machine. Refer to the examples on how this could be done. It is a fast and easy to use deployment of a virtual machine!
+  {{ indent 0 "##" }} Examples
+  {{ indent 0 "###" }} Basic
   ```hcl
   {{ include "examples/basic/main.tf" }}
   ```
+  {{ indent 0 "###" }} Advanced
   ```hcl
   {{ include "examples/advanced/main.tf" }}
   

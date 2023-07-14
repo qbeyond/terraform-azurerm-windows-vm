@@ -22,8 +22,9 @@ variable "nic_config" {
   type = object({
       private_ip = optional(string)
       dns_servers = optional(list(string))
-      nsg_id = optional(string)
-      })
+      nsg = optional(object({
+        id = string
+      }))
   }
   default = {}
   description = <<-DOC

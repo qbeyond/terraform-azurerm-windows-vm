@@ -18,21 +18,20 @@ variable "public_ip_config" {
   DOC
 } 
 
+# nsg needs to be an object to use the count object in main.tf. 
 variable "nic_config" {
   type = object({
       private_ip = optional(string)
       dns_servers = optional(list(string))
-      nsg = optional(object({
+      nsg = optional(object({ 
         id = string
       }))
   })
-  default = {
-    dns_servers = [ "168.63.129.16" ]
-  }
+  default = {}
   description = <<-DOC
   ```
     private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.
-    dns_servers: Optionally specify a list of dns servers for the nic. If not specified the default is the Azure DNS IP.
+    dns_servers: Optionally specify a list of dns servers for the nic.
     nsg_id: Optinally specify the id of a network security group that will be assigned to the nic.    
   ```
   DOC

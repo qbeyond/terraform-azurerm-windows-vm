@@ -22,13 +22,10 @@ variable "nic_config" {
   type = object({
       private_ip = optional(string)
       dns_servers = optional(list(string))
-      nsg = optional(object({
-        id = string
-      }))
-  })
-  default = {
-    dns_servers = [ "168.63.129.16" ]
+      nsg_id = optional(string)
+      })
   }
+  default = {}
   description = <<-DOC
   ```
     private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.

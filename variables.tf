@@ -25,7 +25,7 @@ variable "nic_config" {
       nsg = optional(object({ # nsg needs to be an object to use the count object in main.tf. 
         id = string
       }))
-  }
+  })
   default = {}
   description = <<-DOC
   ```

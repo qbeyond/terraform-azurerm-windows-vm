@@ -10,6 +10,8 @@ This module will create a windows virtual machine, a network interface and assoc
 ## Usage
 
 This module provisions a windows virtual machine. Refer to the examples on how this could be done. It is a fast and easy to use deployment of a virtual machine!
+#### Examples
+###### Basic
 ```hcl
 provider "azurerm" {
   features {}
@@ -49,6 +51,7 @@ resource "azurerm_subnet" "this" {
   address_prefixes = [ "10.0.0.0/24" ]
 }
 ```
+###### Advanced
 ```hcl
 provider "azurerm" {
   features {}

@@ -22,7 +22,7 @@ variable "nic_config" {
   type = object({
       private_ip = optional(string)
       dns_servers = optional(list(string))
-      nsg = optional(object({
+      nsg = optional(object({ # nsg needs to be an object to use the count object in main.tf. 
         id = string
       }))
   }

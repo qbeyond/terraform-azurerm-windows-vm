@@ -34,7 +34,7 @@ resource "azurerm_network_interface" "this" {
 }
 
 resource "azurerm_network_interface_security_group_association" "this" {
-  count = var.nic_config.nsg.id != null ? 1 : 0
+  count = var.nic_config.nsg != null ? 1 : 0
   network_interface_id = azurerm_network_interface.this.id
   network_security_group_id = var.nic_config.nsg.id
 }

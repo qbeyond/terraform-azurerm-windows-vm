@@ -50,6 +50,7 @@ content: |-
   {{ indent 0 "###" }} Advanced
   ```hcl
   {{ include "examples/advanced/main.tf" }}
+  ```
   
   {{ .Requirements }}
   {{ .Providers }}

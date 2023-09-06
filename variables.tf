@@ -1,13 +1,13 @@
 variable "public_ip_config" {
   type = object({
-      enabled = bool
-      allocation_method = optional(string, "Static")
+    enabled           = bool
+    allocation_method = optional(string, "Static")
   })
   default = {
     enabled = false
   }
   validation {
-    condition =  contains(["Static","Dynamic"], var.public_ip_config.allocation_method)
+    condition     = contains(["Static", "Dynamic"], var.public_ip_config.allocation_method)
     error_message = "Allocation method must be Static or Dynamic"
   }
   description = <<-DOC
@@ -16,18 +16,18 @@ variable "public_ip_config" {
     allocation_method: The allocation method of the public ip that will be created. Defaults to static.      
   ```
   DOC
-} 
+}
 
 # nsg needs to be an object to use the count object in main.tf. 
 variable "nic_config" {
   type = object({
-      private_ip = optional(string)
-      dns_servers = optional(list(string))
-      nsg = optional(object({ 
-        id = string
-      }))
+    private_ip  = optional(string)
+    dns_servers = optional(list(string))
+    nsg = optional(object({
+      id = string
+    }))
   })
-  default = {}
+  default     = {}
   description = <<-DOC
   ```
     private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.
@@ -38,35 +38,35 @@ variable "nic_config" {
 }
 
 variable "subnet" {
-  type = object ({
-    id = string
+  type = object({
+    id               = string
     address_prefixes = list(string)
   })
   description = "The variable takes the subnet as input and takes the id and the address prefix for further configuration."
-  }
+}
 
 variable "virtual_machine_config" {
   type = object({
-      hostname = string
-      size = string 
-      os_sku = string
-      location = string
-      availability_set_id = optional(string)
-      zone = optional(string)
-      os_version = optional(string, "latest") 
-      admin_username = optional(string, "loc_sysadmin") 
-      os_disk_caching = optional(string, "ReadWrite")
-      os_disk_storage_type = optional(string, "StandardSSD_LRS")
-      os_disk_size_gb = optional(number)
-      tags = optional(map(string)) 
-      write_accelerator_enabled = optional(bool, false) 
+    hostname                  = string
+    size                      = string
+    os_sku                    = string
+    location                  = string
+    availability_set_id       = optional(string)
+    zone                      = optional(string)
+    os_version                = optional(string, "latest")
+    admin_username            = optional(string, "loc_sysadmin")
+    os_disk_caching           = optional(string, "ReadWrite")
+    os_disk_storage_type      = optional(string, "StandardSSD_LRS")
+    os_disk_size_gb           = optional(number)
+    tags                      = optional(map(string))
+    write_accelerator_enabled = optional(bool, false)
   })
   validation {
-    condition = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)
-    error_message = "Possible values are None, ReadOnly and ReadWrite" 
+    condition     = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)
+    error_message = "Possible values are None, ReadOnly and ReadWrite"
   }
   validation {
-    condition = contains(["Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "StandardSSD_ZRS", "Premium_ZRS"],var.virtual_machine_config.os_disk_storage_type)
+    condition     = contains(["Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "StandardSSD_ZRS", "Premium_ZRS"], var.virtual_machine_config.os_disk_storage_type)
     error_message = "Possible values are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS"
   }
   description = <<-DOC
@@ -92,13 +92,19 @@ variable "virtual_machine_config" {
 variable "severity_group" {
   type = string
   #validation = regex(yeah)
-  default = ""
+  default     = ""
   description = "The severity group of the virtual machine."
 }
 
+variable "update_allowed" {
+  type        = bool
+  default     = true
+  description = "Set the tag `Update allowed`. `True` will set `yes`, `false` to `no`."
+}
+
 variable "admin_password" {
-  type = string
-  sensitive = true
+  type        = string
+  sensitive   = true
   description = "Password of the local administrator."
 }
 
@@ -111,12 +117,12 @@ variable "data_disks" { # change to map of objects
     caching                   = optional(string, "None")
     create_option             = optional(string, "Empty")
     write_accelerator_enabled = optional(bool, false)
- }))
- validation {
-   condition = length([for v in var.data_disks : v.lun]) == length(distinct([for v in var.data_disks : v.lun]))
-   error_message = "One or more of the lun parameters in the map are duplicates."
- }
-  default = {}
+  }))
+  validation {
+    condition     = length([for v in var.data_disks : v.lun]) == length(distinct([for v in var.data_disks : v.lun]))
+    error_message = "One or more of the lun parameters in the map are duplicates."
+  }
+  default     = {}
   description = <<-DOC
   ```
    <name of the data disk> = {
@@ -133,28 +139,28 @@ variable "data_disks" { # change to map of objects
 }
 
 variable "resource_group_name" {
-  type = string
+  type        = string
   description = "Name of the resource group where the resources will be created."
 }
 
 variable "name_overrides" {
   type = object({
-      nic = optional(string)
-      nic_ip_config = optional(string)
-      public_ip = optional(string)
-      virtual_machine = optional(string)
+    nic             = optional(string)
+    nic_ip_config   = optional(string)
+    public_ip       = optional(string)
+    virtual_machine = optional(string)
   })
   description = "Possibility to override names that will be generated according to q.beyond naming convention."
-  default = {}
+  default     = {}
 }
 
 variable "log_analytics_agent" {
   type = object({
-    workspace_id = string
-    primary_shared_key = string 
+    workspace_id       = string
+    primary_shared_key = string
   })
-  sensitive = true 
-  default = null
+  sensitive   = true
+  default     = null
   description = <<-DOC
   ```
     Installs the log analytics agent(MicrosoftMonitoringAgent).

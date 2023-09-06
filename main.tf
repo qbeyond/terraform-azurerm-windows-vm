@@ -67,7 +67,7 @@ resource "azurerm_windows_virtual_machine" "this" {
 
   availability_set_id = var.virtual_machine_config.availability_set_id
   zone                = var.virtual_machine_config.zone
-  tags                = merge(var.virtual_machine_config.tags, {"Severity Group Monthly" = var.severity_group})
+  tags                = local.virtual_machine.tags
 
   lifecycle {
     prevent_destroy = true

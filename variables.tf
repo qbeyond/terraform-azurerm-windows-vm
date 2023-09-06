@@ -96,6 +96,12 @@ variable "severity_group" {
   description = "The severity group of the virtual machine."
 }
 
+variable "update_allowed" {
+  type = string
+  default = null
+  description = "Overwrite the tag `Update allowed`. It is automatically set to `yes`, if `severity_group` is specified."
+}
+
 variable "admin_password" {
   type = string
   sensitive = true

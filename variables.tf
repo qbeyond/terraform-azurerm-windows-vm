@@ -97,9 +97,9 @@ variable "severity_group" {
 }
 
 variable "update_allowed" {
-  type = string
-  default = null
-  description = "Overwrite the tag `Update allowed`. It is automatically set to `yes`, if `severity_group` is specified."
+  type = boolean
+  default = true
+  description = "Set the tag `Update allowed`. `True` will set `yes`, `false` to `no`."
 }
 
 variable "admin_password" {

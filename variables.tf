@@ -169,3 +169,15 @@ variable "log_analytics_agent" {
   ```
   DOC
 }
+
+variable "enable_automatic_updates" {
+  type = bool
+  default = false
+  description = "Enables automatic updates by OS. "
+}
+
+variable "patch_mode" {
+  type = string
+  default = "Manual"
+  description = "Specifies the mode of in-guest patching to this Windows Virtual Machine."
+}

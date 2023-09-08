@@ -51,6 +51,8 @@ resource "azurerm_windows_virtual_machine" "this" {
   network_interface_ids = [
     azurerm_network_interface.this.id,
   ]
+  enable_automatic_updates = var.enable_automatic_updates
+  patch_mode               = var.patch_mode
 
   os_disk {
     caching              = var.virtual_machine_config.os_disk_caching

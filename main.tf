@@ -34,8 +34,8 @@ resource "azurerm_network_interface" "this" {
 }
 
 resource "azurerm_network_interface_security_group_association" "this" {
-  count = var.nic_config.nsg != null ? 1 : 0
-  network_interface_id = azurerm_network_interface.this.id
+  count                     = var.nic_config.nsg != null ? 1 : 0
+  network_interface_id      = azurerm_network_interface.this.id
   network_security_group_id = var.nic_config.nsg.id
 }
 
@@ -68,6 +68,7 @@ resource "azurerm_windows_virtual_machine" "this" {
   availability_set_id = var.virtual_machine_config.availability_set_id
   zone                = var.virtual_machine_config.zone
   tags                = local.virtual_machine.tags
+  timezone            = var.virtual_machine_config.timezone
 
   lifecycle {
     prevent_destroy = true

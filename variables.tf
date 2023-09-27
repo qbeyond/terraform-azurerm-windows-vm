@@ -59,6 +59,7 @@ variable "virtual_machine_config" {
     os_disk_storage_type      = optional(string, "StandardSSD_LRS")
     os_disk_size_gb           = optional(number)
     tags                      = optional(map(string))
+    timezone                  = optional(string, "W. Europe Standard Time")
     write_accelerator_enabled = optional(bool, false)
   })
   validation {
@@ -83,6 +84,9 @@ variable "virtual_machine_config" {
     os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.
     os_disk_size_gb: Optionally change the size of the os disk. Defaults to be specified by image.
     tags: Optionally specify tags in as a map.
+    timezone: Optionally change the timezone of the VM. Defaults to W. Europe Standard Time, 
+      is (UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna. 
+      (More timezone names: https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/).
     write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
       be activated on Premium_LRS disks and caching deactivated. Defaults to false.
   ```

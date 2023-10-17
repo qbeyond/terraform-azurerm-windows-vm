@@ -72,8 +72,7 @@ resource "azurerm_windows_virtual_machine" "this" {
   lifecycle {
     prevent_destroy = true
     ignore_changes = [
-      identity,
-      tags
+      identity
     ]
   }
 }

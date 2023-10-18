@@ -5,12 +5,13 @@ provider "azurerm" {
 module "virtual_machine" {
   source = "../.."
   virtual_machine_config = {
-    hostname       = "CUSTAPP001"
-    location       = local.location
-    admin_username = "local_admin"
-    size           = "Standard_B1s"
-    os_sku         = "2022-Datacenter"
-    os_version     = "latest"
+    hostname             = "CUSTAPP001"
+    location             = local.location
+    admin_username       = "local_admin"
+    size                 = "Standard_B1s"
+    os_sku               = "2022-Datacenter"
+    os_version           = "latest"
+    os_disk_storage_type = "Standard_LRS"
   }
   admin_password      = "H3ll0W0rld!"
   resource_group_name = azurerm_resource_group.this.name

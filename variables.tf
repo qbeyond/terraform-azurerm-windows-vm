@@ -58,7 +58,6 @@ variable "virtual_machine_config" {
     os_disk_caching           = optional(string, "ReadWrite")
     os_disk_storage_type      = optional(string, "StandardSSD_LRS")
     os_disk_size_gb           = optional(number)
-    os_disk_name              = optional(string)
     tags                      = optional(map(string))
     write_accelerator_enabled = optional(bool, false)
   })
@@ -83,7 +82,6 @@ variable "virtual_machine_config" {
     os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.
     os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.
     os_disk_size_gb: Optionally change the size of the os disk. Defaults to be specified by image.
-    os_disk_name: Override the standard name of the os disk (disk-<hostname>-Os) if needed.
     tags: Optionally specify tags in as a map.
     write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
       be activated on Premium_LRS disks and caching deactivated. Defaults to false.
@@ -118,7 +116,6 @@ variable "data_disks" {
     caching                   = optional(string, "None")
     create_option             = optional(string, "Empty")
     write_accelerator_enabled = optional(bool, false)
-    name                      = optional(string)
   }))
   validation {
     condition     = length([for v in var.data_disks : v.lun]) == length(distinct([for v in var.data_disks : v.lun]))
@@ -135,7 +132,6 @@ variable "data_disks" {
     create_option: Optionally change the create option. Defaults to Empty disk.
     write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only
       be activated on Premium_LRS disks and caching deactivated. Defaults to false.
-    name: Optionally override the name of the data disk resource, otherwise the name will be `disk-<hostname>-<logical name>`
    }
   ```
   DOC
@@ -152,6 +148,8 @@ variable "name_overrides" {
     nic_ip_config   = optional(string)
     public_ip       = optional(string)
     virtual_machine = optional(string)
+    os_disk         = optional(string)
+    data_disks      = map(string)
   })
   description = "Possibility to override names that will be generated according to q.beyond naming convention."
   default     = {}

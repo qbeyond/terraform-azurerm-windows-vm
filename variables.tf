@@ -32,7 +32,7 @@ variable "nic_config" {
   ```
     private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.
     dns_servers: Optionally specify a list of dns servers for the nic.
-    nsg_id: Optinally specify the id of a network security group that will be assigned to the nic.    
+    nsg_id: Although it is discouraged you can optionally assign an NSG to the NIC.
   ```
   DOC
 }

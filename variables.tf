@@ -149,7 +149,7 @@ variable "name_overrides" {
     public_ip       = optional(string)
     virtual_machine = optional(string)
     os_disk         = optional(string)
-    data_disks      = map(string)
+    data_disks      = optional(map(string))
   })
   description = "Possibility to override names that will be generated according to q.beyond naming convention."
   default     = {}

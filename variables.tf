@@ -58,6 +58,7 @@ variable "virtual_machine_config" {
     os_disk_caching           = optional(string, "ReadWrite")
     os_disk_storage_type      = optional(string, "StandardSSD_LRS")
     os_disk_size_gb           = optional(number)
+    os_disk_name              = optional(string)
     tags                      = optional(map(string))
     write_accelerator_enabled = optional(bool, false)
   })
@@ -82,6 +83,7 @@ variable "virtual_machine_config" {
     os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.
     os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.
     os_disk_size_gb: Optionally change the size of the os disk. Defaults to be specified by image.
+    os_disk_name: Override the standard name of the os disk (disk-<hostname>-Os) if needed.
     tags: Optionally specify tags in as a map.
     write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
       be activated on Premium_LRS disks and caching deactivated. Defaults to false.

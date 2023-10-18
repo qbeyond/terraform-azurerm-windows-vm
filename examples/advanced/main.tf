@@ -24,6 +24,8 @@ module "virtual_machine" {
     os_disk_caching = "ReadWrite"
     os_disk_storage_type = "StandardSSD_LRS"
     os_disk_size_gb = 128
+    os_disk_name "DiskOverride"
+
     tags = {
       "Environment" = "prd" 
     }
@@ -50,6 +52,9 @@ module "virtual_machine" {
     nic_ip_config = local.nic_ip_config
     public_ip = local.public_ip
     virtual_machine = local.virtual_machine
+    data_disks = {
+      "${local.managed_disk_name}" = "Override"
+    }
   }
 }
 

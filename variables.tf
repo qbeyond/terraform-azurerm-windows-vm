@@ -118,6 +118,7 @@ variable "data_disks" {
     caching                   = optional(string, "None")
     create_option             = optional(string, "Empty")
     write_accelerator_enabled = optional(bool, false)
+    name                      = optional(string)
   }))
   validation {
     condition     = length([for v in var.data_disks : v.lun]) == length(distinct([for v in var.data_disks : v.lun]))
@@ -126,7 +127,7 @@ variable "data_disks" {
   default     = {}
   description = <<-DOC
   ```
-   <name of the data disk> = {
+   <logical name of the data disk> = {
     lun: Number of the lun.
     disk_size_gb: The size of the data disk.
     storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.
@@ -134,6 +135,7 @@ variable "data_disks" {
     create_option: Optionally change the create option. Defaults to Empty disk.
     write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only
       be activated on Premium_LRS disks and caching deactivated. Defaults to false.
+    name: Optionally override the name of the data disk resource, otherwise the name will be `disk-<hostname>-<logical name>`
    }
   ```
   DOC

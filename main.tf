@@ -53,7 +53,7 @@ resource "azurerm_windows_virtual_machine" "this" {
   ]
 
   os_disk {
-    name                 = local.virtual_machine.os_disk_name
+    name                 = local.os_disk_name
     caching              = var.virtual_machine_config.os_disk_caching
     storage_account_type = var.virtual_machine_config.os_disk_storage_type
     disk_size_gb         = var.virtual_machine_config.os_disk_size_gb

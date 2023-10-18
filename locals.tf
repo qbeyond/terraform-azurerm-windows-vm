@@ -9,10 +9,10 @@ locals {
   }
 
   virtual_machine = {
-    name         = coalesce(var.name_overrides.virtual_machine, "vm-${var.virtual_machine_config.hostname}")
-    tags         = merge(var.virtual_machine_config.tags, { "Severity Group Monthly" = var.severity_group }, { "Update allowed" = local.update_allowed })
-    os_disk_name = coalesce(var.name_overrides.os_disk, "disk-${local.virtual_machine.name}-Os")
+    name = coalesce(var.name_overrides.virtual_machine, "vm-${var.virtual_machine_config.hostname}")
+    tags = merge(var.virtual_machine_config.tags, { "Severity Group Monthly" = var.severity_group }, { "Update allowed" = local.update_allowed })
   }
+  os_disk_name   = coalesce(var.name_overrides.os_disk, "disk-${local.virtual_machine.name}-Os")
   update_allowed = var.update_allowed ? "yes" : "no"
 }
 

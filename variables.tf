@@ -110,7 +110,7 @@ variable "admin_password" {
 }
 
 
-variable "data_disks" { # change to map of objects
+variable "data_disks" {
   type = map(object({
     lun                       = number
     disk_size_gb              = number

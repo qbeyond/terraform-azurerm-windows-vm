@@ -92,8 +92,7 @@ variable "virtual_machine_config" {
 }
 
 variable "severity_group" {
-  type = string
-  #validation = regex(yeah)
+  type        = string
   default     = ""
   description = "The severity group of the virtual machine."
 }

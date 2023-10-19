@@ -17,9 +17,10 @@ module "virtual_machine" {
   resource_group_name = azurerm_resource_group.this.name
   subnet              = azurerm_subnet.this
   data_disks = {
-    test = {
-      disk_size_gb = 8
-      lun          = 1
+    test1 = {
+      disk_size_gb         = 8
+      lun                  = 1
+      storage_account_type = "Standard_LRS"
     }
   }
 }

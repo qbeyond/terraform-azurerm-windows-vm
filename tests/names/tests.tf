@@ -5,3 +5,12 @@ output "os_disk_name" {
     error_message = "The name of the os disk was not correctly generated."
   }
 }
+
+output "data_disk_names" {
+  value = keys(module.virtual_machine.data_disks)
+
+  precondition {
+    condition     = alltrue([for key, data_disk in module.virtual_machine.data_disks : local.data_disk_names[key] == data_disk.name])
+    error_message = "One name of the data disk was not correctly generated."
+  }
+}

@@ -1,6 +1,6 @@
 resource "azurerm_managed_disk" "data_disk" {
   for_each             = var.data_disks
-  name                 = lookup(var.name_overrides.data_disks, each.key, "disk-${local.virtual_machine.name}-${each.key}")
+  name                 = lookup(var.name_overrides.data_disks, each.key, "disk-${var.virtual_machine_config.hostname}-${each.key}")
   location             = var.virtual_machine_config.location
   resource_group_name  = var.resource_group_name
   storage_account_type = each.value["storage_account_type"]

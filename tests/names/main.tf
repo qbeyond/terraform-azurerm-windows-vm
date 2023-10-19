@@ -5,7 +5,7 @@ provider "azurerm" {
 module "virtual_machine" {
   source = "../.."
   virtual_machine_config = {
-    hostname             = "CUSTAPP001"
+    hostname             = local.hostname
     location             = local.location
     admin_username       = "local_admin"
     size                 = "Standard_B1s"
@@ -16,6 +16,13 @@ module "virtual_machine" {
   admin_password      = "H3ll0W0rld!"
   resource_group_name = azurerm_resource_group.this.name
   subnet              = azurerm_subnet.this
+  data_disks = {
+    test1 = {
+      disk_size_gb         = 8
+      lun                  = 1
+      storage_account_type = "Standard_LRS"
+    }
+  }
 }
 
 resource "azurerm_resource_group" "this" {
@@ -36,3 +43,4 @@ resource "azurerm_subnet" "this" {
   virtual_network_name = azurerm_virtual_network.this.name
   address_prefixes     = ["10.0.0.0/24"]
 }
+

@@ -40,19 +40,20 @@ resource "azurerm_network_interface_security_group_association" "this" {
 }
 
 resource "azurerm_windows_virtual_machine" "this" {
-  name                     = local.virtual_machine.name
-  computer_name            = var.virtual_machine_config.hostname
-  location                 = var.virtual_machine_config.location
-  resource_group_name      = var.resource_group_name
-  size                     = var.virtual_machine_config.size
-  provision_vm_agent       = true
-  admin_username           = var.virtual_machine_config.admin_username
-  admin_password           = var.admin_password
+  name                = local.virtual_machine.name
+  computer_name       = var.virtual_machine_config.hostname
+  location            = var.virtual_machine_config.location
+  resource_group_name = var.resource_group_name
+  size                = var.virtual_machine_config.size
+  provision_vm_agent  = true
+  admin_username      = var.virtual_machine_config.admin_username
+  admin_password      = var.admin_password
   network_interface_ids = [
     azurerm_network_interface.this.id,
   ]
 
   os_disk {
+    name                 = local.os_disk_name
     caching              = var.virtual_machine_config.os_disk_caching
     storage_account_type = var.virtual_machine_config.os_disk_storage_type
     disk_size_gb         = var.virtual_machine_config.os_disk_size_gb
@@ -73,8 +74,7 @@ resource "azurerm_windows_virtual_machine" "this" {
   lifecycle {
     prevent_destroy = true
     ignore_changes = [
-      identity,
-      tags
+      identity
     ]
   }
 }

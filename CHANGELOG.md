@@ -6,6 +6,14 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
  
 ## [Unreleased]
 
+# [2.0.1] - 2023-11-21
+
+Apply a default timezone for VM configuration. Default value: W. Europe Standard Time
+
+### Added
+
+- timezone as virtual maching config variable. Default: W. Europe Standard Time
+
 # [2.0.0] - 2023-10-18
 
 Apply a default naming convention for disks. To upgrade to the new version from a previous version, use the `os_disk` and `data_disks` of `name_overrides` to avoid recreating the disks.

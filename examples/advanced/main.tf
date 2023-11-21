@@ -25,6 +25,7 @@ module "virtual_machine" {
     os_disk_storage_type = "Standard_LRS"
     os_disk_size_gb      = 128
     os_disk_name         = "DiskOverride"
+    timezone             = "Azores Standard Time"
 
     tags = {
       "Environment" = "prd"

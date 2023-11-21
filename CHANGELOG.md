@@ -6,7 +6,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
  
 ## [Unreleased]
 
-# [2.0.1] - 2023-11-21
+# [2.1.0] - 2023-11-21
 
 Apply a default timezone for VM configuration. Default value: UTC
 

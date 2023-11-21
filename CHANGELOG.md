@@ -8,11 +8,11 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 # [2.0.1] - 2023-11-21
 
-Apply a default timezone for VM configuration. Default value: W. Europe Standard Time
+Apply a default timezone for VM configuration. Default value: UTC
 
 ### Added
 
-- timezone as virtual maching config variable. Default: W. Europe Standard Time
+- timezone as virtual maching config variable. Default: UTC
 
 # [2.0.0] - 2023-10-18
 

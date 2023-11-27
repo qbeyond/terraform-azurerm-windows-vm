@@ -68,7 +68,7 @@ variable "virtual_machine_config" {
   }
   validation {
     condition     = contains(["Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "StandardSSD_ZRS", "Premium_ZRS"], var.virtual_machine_config.os_disk_storage_type)
-    error_message = "Possible values are for os_disk_storage_type Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS"
+    error_message = "Possible values for os_disk_storage_type are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS"
   }
   description = <<-DOC
   ```

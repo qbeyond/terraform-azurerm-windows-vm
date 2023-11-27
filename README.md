@@ -1,10 +1,13 @@
-# Module
+# Windows VM Module
 [![GitHub tag](https://img.shields.io/github/tag/qbeyond/terraform-azurerm-windows-vm.svg)](https://registry.terraform.io/modules/qbeyond/windows-vm/azurerm/latest)
 [![License](https://img.shields.io/github/license/qbeyond/terraform-azurerm-windows-vm.svg)](https://github.com/qbeyond/terraform-azurerm-windows-vm/blob/main/LICENSE)
 
 ----
 
-This module will create a windows virtual machine, a network interface and associates the network interface to the target subnet. Optionally one or more data disks and a public ip can be created. 
+This module will create a windows virtual machine, a network interface and associates the network interface to the target subnet. 
+Optionally one or more data disks and a public IP can be created. 
+The VM and all disks will be created with the `prevent_destroy` option enabled.
+If you need to delete these resources you must do so via Portal/Powershell/AzCLI/...
 
 <!-- BEGIN_TF_DOCS -->
 ## Usage

@@ -12,8 +12,8 @@ variable "public_ip_config" {
   }
   description = <<-DOC
   ```
-    enabled: Optionally select true if a public ip should be created. Defaults to false.
-    allocation_method: The allocation method of the public ip that will be created. Defaults to static.      
+    enabled: Optionally select true if a basic public ip should be created. Defaults to false.
+    allocation_method: Static or Dynamic allocation method of the public ip. Defaults to Static.      
   ```
   DOC
 }
@@ -30,9 +30,9 @@ variable "nic_config" {
   default     = {}
   description = <<-DOC
   ```
-    private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.
+    private_ip: Optionally specify a static private IP to use. Otherwise it will be allocated dynamically by Azure.
     dns_servers: Optionally specify a list of dns servers for the nic.
-    nsg_id: Although it is discouraged you can optionally assign an NSG to the NIC.
+    nsg_id: Although it is discouraged you can optionally assign an NSG by resource ID to this NIC.
   ```
   DOC
 }
@@ -64,30 +64,28 @@ variable "virtual_machine_config" {
   })
   validation {
     condition     = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)
-    error_message = "Possible values are None, ReadOnly and ReadWrite"
+    error_message = "Possible values for os_disk_caching are None, ReadOnly and ReadWrite"
   }
   validation {
     condition     = contains(["Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "StandardSSD_ZRS", "Premium_ZRS"], var.virtual_machine_config.os_disk_storage_type)
-    error_message = "Possible values are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS"
+    error_message = "Possible values are for os_disk_storage_type Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS"
   }
   description = <<-DOC
   ```
-    size: The size of the vm. Possible values can be seen here: https://learn.microsoft.com/en-us/azure/virtual-machines/sizes
-    os_sku: The os that will be running on the vm.
+    size: The size of the VM. Possible values can be seen here: https://learn.microsoft.com/en-us/azure/virtual-machines/sizes
+    os_sku: The OS that will be running on the VM. E.g. 2022-Datacenter.
     location: The location of the virtual machine.
-    availability_set_id: Optionally specify an availibilty set for the vm.
-    zone: Optionally specify an availibility zone for the vm. 
-    os_version: Optionally specify an os version for the chosen sku. Defaults to latest.
-    admin_username: Optionally choose the admin_username of the vm. Defaults to loc_sysadmin. 
-      The local admin name could be changed by the gpo in the target ad.
-    os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.
+    availability_set_id: Optionally specify an availibilty set by ID for the VM.
+    zone: Optionally specify an availibility zone for the VM. 
+    os_version: Optionally specify an OS version for the chosen SKU. Defaults to latest.
+    admin_username: Optionally choose the admin_username of the VM. Defaults to loc_sysadmin. 
+      The local admin name could potentially change due to a GPO in the target Active Directory.
+    os_disk_caching: Optionally change the caching option of the OS disk. Defaults to ReadWrite.
     os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.
-    os_disk_size_gb: Optionally change the size of the os disk. Defaults to be specified by image.
-    tags: Optionally specify tags in as a map.
-    timezone: Optionally change the timezone of the VM. Defaults to UTC.
-      (More timezone names: https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/).
-    write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
-      be activated on Premium_LRS disks and caching deactivated. Defaults to false.
+    os_disk_size_gb: Optionally change the size of the OS disk. Defaults to the size specified by the SKU image.
+    tags: Optionally specify resource tags for the VM.
+    timezone: Optionally change the timezone of the VM. Defaults to UTC. More timezone names: https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/
+    write_accelerator_enabled: Optionally activate write accelaration for the OS disk. Can only be activated when using Premium_LRS disk and caching deactivated. Defaults to false.
   ```
   DOC
 }
@@ -95,13 +93,13 @@ variable "virtual_machine_config" {
 variable "severity_group" {
   type        = string
   default     = ""
-  description = "The severity group of the virtual machine."
+  description = "The severity group of the VM used for scheduling updates. This sets the 'Severity Group Monthly' tag."
 }
 
 variable "update_allowed" {
   type        = bool
   default     = true
-  description = "Set the tag `Update allowed`. `True` will set `yes`, `false` to `no`."
+  description = "This setting controls the 'Update allowed' tag. Where 'true` is 'yes' and 'false' is 'no'. Defaults to true."
 }
 
 variable "admin_password" {
@@ -129,12 +127,11 @@ variable "data_disks" {
   ```
    <logical name of the data disk> = {
     lun: Number of the lun.
-    disk_size_gb: The size of the data disk.
+    disk_size_gb: The size of this data disk.
     storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.
     caching: Optionally activate disk caching. Defaults to None.
     create_option: Optionally change the create option. Defaults to Empty disk.
-    write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only
-      be activated on Premium_LRS disks and caching deactivated. Defaults to false.
+    write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only be activated on Premium_LRS disks and caching deactivated. Defaults to false.
    }
   ```
   DOC
@@ -154,7 +151,7 @@ variable "name_overrides" {
     os_disk         = optional(string)
     data_disks      = optional(map(string), {})
   })
-  description = "Possibility to override names that will be generated according to q.beyond naming convention."
+  description = "Possibility to override the default names generated from the q.beyond naming convention."
   default     = {}
 }
 
@@ -167,9 +164,9 @@ variable "log_analytics_agent" {
   default     = null
   description = <<-DOC
   ```
-    Installs the log analytics agent(MicrosoftMonitoringAgent).
-    workspace_id: Specify id of the log analytics workspace to which monitoring data will be sent.
-    shared_key: The Primary shared key for the Log Analytics Workspace..
+    Installs the log analytics agent (MicrosoftMonitoringAgent) when specified.
+    workspace_id: Specify the ID of the log analytics workspace to which monitoring data will be sent.
+    shared_key: The primary/secondary shared key for the log analytics workspace.
   ```
   DOC
 }

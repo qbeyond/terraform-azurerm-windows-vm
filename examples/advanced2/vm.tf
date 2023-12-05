@@ -28,7 +28,7 @@ locals {
       write_accelerator_enabled = false
 
       admin_username = "local_admin"
-      admin_password = var.CUSTMXP002A_password
+      admin_password = "local31$Admin"
   
       severity_group = "01-fourth-tuesday-0200-XCSUFEDTG-reboot"
       update_allowed = true
@@ -92,7 +92,7 @@ locals {
       write_accelerator_enabled = false
 
       admin_username = "local_admin"
-      admin_password = var.CUSTMXP002B_password
+      admin_password = "local32$Admin"
 
       severity_group = "01-last-friday-0200-XCSUFEDTG-reboot"
       update_allowed = true

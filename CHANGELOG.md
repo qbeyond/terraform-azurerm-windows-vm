@@ -13,6 +13,7 @@ Apply a default timezone for VM configuration. Default value: UTC
 ### Added
 
 - timezone as virtual maching config variable. Default: UTC
+- Advance 2 example.
 
 # [2.0.0] - 2023-10-18
 

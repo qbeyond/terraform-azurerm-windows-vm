@@ -47,20 +47,21 @@ variable "subnet" {
 
 variable "virtual_machine_config" {
   type = object({
-    hostname                  = string
-    size                      = string
-    os_sku                    = string
-    location                  = string
-    availability_set_id       = optional(string)
-    zone                      = optional(string)
-    os_version                = optional(string, "latest")
-    admin_username            = optional(string, "loc_sysadmin")
-    os_disk_caching           = optional(string, "ReadWrite")
-    os_disk_storage_type      = optional(string, "StandardSSD_LRS")
-    os_disk_size_gb           = optional(number)
-    tags                      = optional(map(string))
-    timezone                  = optional(string, "UTC")
-    write_accelerator_enabled = optional(bool, false)
+    hostname                     = string
+    size                         = string
+    os_sku                       = string
+    location                     = string
+    availability_set_id          = optional(string)
+    zone                         = optional(string)
+    os_version                   = optional(string, "latest")
+    admin_username               = optional(string, "loc_sysadmin")
+    os_disk_caching              = optional(string, "ReadWrite")
+    os_disk_storage_type         = optional(string, "StandardSSD_LRS")
+    os_disk_size_gb              = optional(number)
+    tags                         = optional(map(string))
+    timezone                     = optional(string, "UTC")
+    write_accelerator_enabled    = optional(bool, false)
+    proximity_placement_group_id = optional(string)
   })
   validation {
     condition     = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)
@@ -88,6 +89,7 @@ variable "virtual_machine_config" {
       (More timezone names: https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/).
     write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
       be activated on Premium_LRS disks and caching deactivated. Defaults to false.
+    proximity_placement_group_id: (Optional) The ID of the Proximity Placement Group which the Virtual Machine should be assigned to.
   ```
   DOC
 }

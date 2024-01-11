@@ -14,23 +14,24 @@ module "virtual_machine" {
     nsg         = azurerm_network_security_group.this
   }
   virtual_machine_config = {
-    hostname             = "CUSTAPP007"
-    size                 = "Standard_B1s"
-    os_sku               = "2022-datacenter-g2"
-    location             = azurerm_resource_group.this.location
-    availability_set_id  = azurerm_availability_set.this.id
-    os_version           = "latest"
-    admin_username       = "loc_admin"
-    os_disk_caching      = "ReadWrite"
-    os_disk_storage_type = "Standard_LRS"
-    os_disk_size_gb      = 128
-    os_disk_name         = "DiskOverride"
-    timezone             = "Azores Standard Time"
+    hostname                     = "CUSTAPP007"
+    size                         = "Standard_B1s"
+    os_sku                       = "2022-datacenter-g2"
+    location                     = azurerm_resource_group.this.location
+    availability_set_id          = azurerm_availability_set.this.id
+    write_accelerator_enabled    = false
+    proximity_placement_group_id = azurerm_proximity_placement_group.this.id
+    os_version                   = "latest"
+    admin_username               = "loc_admin"
+    os_disk_caching              = "ReadWrite"
+    os_disk_storage_type         = "Standard_LRS"
+    os_disk_size_gb              = 128
+    os_disk_name                 = "DiskOverride"
+    timezone                     = "Azores Standard Time"
 
     tags = {
       "Environment" = "prd"
     }
-    write_accelerator_enabled = false
   }
   admin_password      = "H3ll0W0rld!"
   resource_group_name = azurerm_resource_group.this.name

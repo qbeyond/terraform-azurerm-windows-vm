@@ -13,10 +13,11 @@ resource "azurerm_public_ip" "this" {
 }
 
 resource "azurerm_network_interface" "this" {
-  name                = local.nic.name
-  location            = var.virtual_machine_config.location
-  resource_group_name = var.resource_group_name
-  dns_servers         = var.nic_config.dns_servers
+  name                          = local.nic.name
+  location                      = var.virtual_machine_config.location
+  resource_group_name           = var.resource_group_name
+  dns_servers                   = var.nic_config.dns_servers
+  enable_accelerated_networking = var.enable_accelerated_networking
 
   ip_configuration {
     name                          = local.nic.ip_config_name
@@ -40,17 +41,14 @@ resource "azurerm_network_interface_security_group_association" "this" {
 }
 
 resource "azurerm_windows_virtual_machine" "this" {
-  name                = local.virtual_machine.name
-  computer_name       = var.virtual_machine_config.hostname
-  location            = var.virtual_machine_config.location
-  resource_group_name = var.resource_group_name
-  size                = var.virtual_machine_config.size
-  provision_vm_agent  = true
-  admin_username      = var.virtual_machine_config.admin_username
-  admin_password      = var.admin_password
-  network_interface_ids = [
-    azurerm_network_interface.this.id,
-  ]
+  name                  = local.virtual_machine.name
+  computer_name         = var.virtual_machine_config.hostname
+  location              = var.virtual_machine_config.location
+  resource_group_name   = var.resource_group_name
+  size                  = var.virtual_machine_config.size
+  provision_vm_agent    = true
+  admin_username        = var.virtual_machine_config.admin_username
+  admin_password        = var.admin_password
 
   os_disk {
     name                 = local.os_disk_name
@@ -66,10 +64,12 @@ resource "azurerm_windows_virtual_machine" "this" {
     version   = var.virtual_machine_config.os_version
   }
 
-  availability_set_id = var.virtual_machine_config.availability_set_id
-  zone                = var.virtual_machine_config.zone
-  tags                = local.virtual_machine.tags
-  timezone            = var.virtual_machine_config.timezone
+  proximity_placement_group_id = var.virtual_machine_config.proximity_placement_group_id
+  network_interface_ids        = concat([azurerm_network_interface.this.id], var.additional_network_interface_ids)
+  availability_set_id          = var.virtual_machine_config.availability_set_id
+  zone                         = var.virtual_machine_config.zone
+  tags                         = local.virtual_machine.tags
+  timezone                     = var.virtual_machine_config.timezone
 
   lifecycle {
     prevent_destroy = true

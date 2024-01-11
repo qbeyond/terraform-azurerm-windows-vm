@@ -37,6 +37,18 @@ variable "nic_config" {
   DOC
 }
 
+variable "enable_accelerated_networking" {
+  description = "Enabled Accelerated networking (SR-IOV) on the NIC. The machine SKU must support this feature. https://docs.microsoft.com/en-us/azure/virtual-network/create-vm-accelerated-networking-powershell"
+  type        = bool
+  default     = "false"
+}
+
+variable "additional_network_interface_ids" {
+  type        = list(string)
+  default     = []
+  description = "List of ids for additional azurerm_network_interface."
+}
+
 variable "subnet" {
   type = object({
     id               = string

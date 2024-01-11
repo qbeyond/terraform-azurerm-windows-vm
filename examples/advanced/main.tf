@@ -48,6 +48,10 @@ module "virtual_machine" {
   }
 
   log_analytics_agent = azurerm_log_analytics_workspace.this
+  additional_network_interface_ids = [azurerm_network_interface.additional_nic_01.id]
+  enable_accelerated_networking    = true
+  severity_group                   = "01-third-tuesday-0200-XCSUFEDTG-reboot"
+  update_allowed                   = true
 
   name_overrides = {
     nic             = local.nic
@@ -83,6 +87,39 @@ resource "azurerm_availability_set" "this" {
   name                = local.availability_set_name
   location            = local.location
   resource_group_name = azurerm_resource_group.this.name
+}
+
+resource "azurerm_proximity_placement_group" "this" {
+  name                = local.proximity_placement_group_name
+  location            = local.location
+  resource_group_name = azurerm_resource_group.this.name
+  allowed_vm_sizes    = ["Standard_B1s", "Standard_M32ms_v2", "Standard_E16as_v5", "Standard_E8as_v5"]
+  
+  lifecycle {
+      ignore_changes = [tags]
+  }
+}
+
+resource "azurerm_network_interface" "additional_nic_01" {
+  name                          = "nic-vm-${replace(element(azurerm_virtual_network.this.address_space,0), "/[./]/", "-")}-01"
+  location                      = local.location
+  resource_group_name           = azurerm_resource_group.this.name
+  dns_servers                   = []
+  enable_accelerated_networking = true
+
+  ip_configuration {
+    name                          = "ip-nic-01"
+    subnet_id                     = azurerm_subnet.this.id
+    private_ip_address_allocation = "Dynamic"
+    private_ip_address            = null
+    public_ip_address_id          = null
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_network_security_group" "this" {

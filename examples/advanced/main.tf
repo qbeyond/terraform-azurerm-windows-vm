@@ -94,7 +94,6 @@ resource "azurerm_proximity_placement_group" "this" {
   name                = local.proximity_placement_group_name
   location            = local.location
   resource_group_name = azurerm_resource_group.this.name
-  allowed_vm_sizes    = ["Standard_B1s", "Standard_M32ms_v2", "Standard_E16as_v5", "Standard_E8as_v5"]
   
   lifecycle {
       ignore_changes = [tags]

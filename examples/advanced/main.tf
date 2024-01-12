@@ -84,9 +84,10 @@ resource "azurerm_subnet" "this" {
 }
 
 resource "azurerm_availability_set" "this" {
-  name                = local.availability_set_name
-  location            = local.location
-  resource_group_name = azurerm_resource_group.this.name
+  name                         = local.availability_set_name
+  location                     = local.location
+  resource_group_name          = azurerm_resource_group.this.name
+  proximity_placement_group_id = azurerm_proximity_placement_group.this.id
 }
 
 resource "azurerm_proximity_placement_group" "this" {

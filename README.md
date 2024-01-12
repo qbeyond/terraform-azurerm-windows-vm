@@ -65,9 +65,10 @@ module "virtual_machine" {
     allocation_method = "Static"
   }
   nic_config = {
-    private_ip  = "10.0.0.16"
-    dns_servers = ["10.0.0.10", "10.0.0.11"]
-    nsg         = azurerm_network_security_group.this
+    private_ip                    = "10.0.0.16"
+    dns_servers                   = ["10.0.0.10", "10.0.0.11"]
+    enable_accelerated_networking = true
+    nsg                           = azurerm_network_security_group.this
   }
   virtual_machine_config = {
     hostname                     = "CUSTAPP007"
@@ -105,7 +106,6 @@ module "virtual_machine" {
 
   log_analytics_agent              = azurerm_log_analytics_workspace.this
   additional_network_interface_ids = [azurerm_network_interface.additional_nic_01.id]
-  enable_accelerated_networking    = true
   severity_group                   = "01-third-tuesday-0200-XCSUFEDTG-reboot"
   update_allowed                   = true
   name_overrides = {
@@ -160,7 +160,6 @@ resource "azurerm_network_interface" "additional_nic_01" {
   location                      = local.location
   resource_group_name           = azurerm_resource_group.this.name
   dns_servers                   = []
-  enable_accelerated_networking = true
 
   ip_configuration {
     name                          = "ip-nic-01"
@@ -221,10 +220,9 @@ resource "azurerm_log_analytics_workspace" "this" {
 | <a name="input_data_disks"></a> [data\_disks](#input\_data\_disks) | <pre><logical name of the data disk> = {<br>  lun: Number of the lun.<br>  disk_size_gb: The size of the data disk.<br>  storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.<br>  caching: Optionally activate disk caching. Defaults to None.<br>  create_option: Optionally change the create option. Defaults to Empty disk.<br>  write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only be activated on Premium_LRS disks and caching deactivated. Defaults to false.<br> }</pre> | <pre>map(object({<br>    lun                       = number<br>    disk_size_gb              = number<br>    storage_account_type      = optional(string, "StandardSSD_LRS")<br>    caching                   = optional(string, "None")<br>    create_option             = optional(string, "Empty")<br>    write_accelerator_enabled = optional(bool, false)<br>  }))</pre> | `{}` | no |
 | <a name="input_log_analytics_agent"></a> [log\_analytics\_agent](#input\_log\_analytics\_agent) | <pre>Installs the log analytics agent(MicrosoftMonitoringAgent).<br>  workspace_id: Specify id of the log analytics workspace to which monitoring data will be sent.<br>  shared_key: The Primary shared key for the Log Analytics Workspace..</pre> | <pre>object({<br>    workspace_id       = string<br>    primary_shared_key = string<br>  })</pre> | `null` | no |
 | <a name="input_name_overrides"></a> [name\_overrides](#input\_name\_overrides) | Possibility to override names that will be generated according to q.beyond naming convention. | <pre>object({<br>    nic             = optional(string)<br>    nic_ip_config   = optional(string)<br>    public_ip       = optional(string)<br>    virtual_machine = optional(string)<br>    os_disk         = optional(string)<br>    data_disks      = optional(map(string), {})<br>  })</pre> | `{}` | no |
-| <a name="input_nic_config"></a> [nic\_config](#input\_nic\_config) | <pre>private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.<br>  dns_servers: Optionally specify a list of dns servers for the nic.<br>  nsg_id: Although it is discouraged you can optionally assign an NSG to the NIC.</pre> | <pre>object({<br>    private_ip  = optional(string)<br>    dns_servers = optional(list(string))<br>    nsg = optional(object({<br>      id = string<br>    }))<br>  })</pre> | `{}` | no |
+| <a name="input_nic_config"></a> [nic\_config](#input\_nic\_config) | <pre>private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.<br>  dns_servers: Optionally specify a list of dns servers for the nic.<br>  enable_accelerated_networking: Enabled Accelerated networking (SR-IOV) on the NIC. The machine SKU must support this feature.<br>  nsg_id: Optinally specify the id of a network security group that will be assigned to the nic.</pre> | <pre>object({<br>    private_ip  = optional(string)<br>    dns_servers = optional(list(string))<br>    enable_accelerated_networking = optional(bool, false)<br>    nsg = optional(object({<br>      id = string<br>    }))<br>  })</pre> | `{}` | no |
 | <a name="input_public_ip_config"></a> [public\_ip\_config](#input\_public\_ip\_config) | <pre>enabled: Optionally select true if a public ip should be created. Defaults to false.<br>  allocation_method: The allocation method of the public ip that will be created. Defaults to static.</pre> | <pre>object({<br>    enabled           = bool<br>    allocation_method = optional(string, "Static")<br>  })</pre> | <pre>{<br>  "enabled": false<br>}</pre> | no |
 | <a name="additional_network_interface_ids"></a> [additional\_network\_interface](#additional\_network\_interface) | <pre>List of ids for additional azurerm_network_interface.</pre> | `list(string)` | `[]` | no |
-| <a name="input_enable_accelerated_networking"></a> [enable\_accelerated\_networking](#input\_enable\_accelerated\_networking) | Enabled Accelerated networking (SR-IOV) on the NIC. The machine SKU must support this feature.| `bool` | `false` | no |
 | <a name="input_severity_group"></a> [severity\_group](#input\_severity\_group) | The severity group of the virtual machine. | `string` | `""` | no |
 | <a name="input_update_allowed"></a> [update\_allowed](#input\_update\_allowed) | Set the tag `Update allowed`. `True` will set `yes`, `false` to `no`. | `bool` | `true` | no |
 ## Outputs

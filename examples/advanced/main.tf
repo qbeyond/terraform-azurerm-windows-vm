@@ -9,9 +9,10 @@ module "virtual_machine" {
     allocation_method = "Static"
   }
   nic_config = {
-    private_ip  = "10.0.0.16"
-    dns_servers = ["10.0.0.10", "10.0.0.11"]
-    nsg         = azurerm_network_security_group.this
+    private_ip                    = "10.0.0.16"
+    dns_servers                   = ["10.0.0.10", "10.0.0.11"]
+    enable_accelerated_networking = true
+    nsg                           = azurerm_network_security_group.this
   }
   virtual_machine_config = {
     hostname                     = "CUSTAPP007"
@@ -49,7 +50,6 @@ module "virtual_machine" {
 
   log_analytics_agent = azurerm_log_analytics_workspace.this
   additional_network_interface_ids = [azurerm_network_interface.additional_nic_01.id]
-  enable_accelerated_networking    = true
   severity_group                   = "01-third-tuesday-0200-XCSUFEDTG-reboot"
   update_allowed                   = true
 
@@ -105,7 +105,6 @@ resource "azurerm_network_interface" "additional_nic_01" {
   location                      = local.location
   resource_group_name           = azurerm_resource_group.this.name
   dns_servers                   = []
-  enable_accelerated_networking = true
 
   ip_configuration {
     name                          = "ip-nic-01"

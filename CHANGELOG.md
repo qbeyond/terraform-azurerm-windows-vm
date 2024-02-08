@@ -6,6 +6,12 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
  
 ## [Unreleased]
 
+# [3.0.0] - 2024-02-08
+
+- added options for setting patch mode, patch assesment mode and bypass_platform_safety_checks_on_user_schedule_enabled setting since they are necessary to 
+    be true for azure update manager. All default to true
+- upgrading to this version without using update management requires to change options to false
+
 # [2.1.0] - 2023-11-21
 
 Apply a default timezone for VM configuration. Default value: UTC

@@ -61,6 +61,9 @@ variable "virtual_machine_config" {
     tags                      = optional(map(string))
     timezone                  = optional(string, "UTC")
     write_accelerator_enabled = optional(bool, false)
+    patch_assessment_mode     = optional(string, AutomaticByPlatform)
+    patch_mode                = optional(string, AutomaticByPlatform)
+    bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
   })
   validation {
     condition     = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)

@@ -6,7 +6,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
  
 ## [Unreleased]
 
-# [3.0.0] - 2024-02-08
+## [3.0.0] - 2024-02-08
 
 - added options for setting patch mode, patch assesment mode and bypass_platform_safety_checks_on_user_schedule_enabled setting since they are necessary to 
     be true for azure update manager. All default to true
@@ -14,7 +14,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - increased azurerm version contraint to use patch_mode options
 - removed default value for severity group monthly to prevent conflicts with new update management
 
-# [2.1.0] - 2023-11-21
+## [2.1.0] - 2023-11-21
 
 Apply a default timezone for VM configuration. Default value: UTC
 
@@ -22,7 +22,7 @@ Apply a default timezone for VM configuration. Default value: UTC
 
 - timezone as virtual maching config variable. Default: UTC
 
-# [2.0.0] - 2023-10-18
+## [2.0.0] - 2023-10-18
 
 Apply a default naming convention for disks. To upgrade to the new version from a previous version, use the `os_disk` and `data_disks` of `name_overrides` to avoid recreating the disks.
 

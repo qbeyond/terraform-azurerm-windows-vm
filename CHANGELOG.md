@@ -8,11 +8,33 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [3.0.0] - 2024-02-08
 
-- added options for setting patch mode, patch assesment mode and bypass_platform_safety_checks_on_user_schedule_enabled setting since they are necessary to 
-    be true for azure update manager. All default to true
-- upgrading to this version without using update management requires to change options to false
-- increased azurerm version contraint to use patch_mode options
-- removed default value for severity group monthly to prevent conflicts with new update management
+### Upgrade
+
+Please note, that this upgrade makes the above properties managed by terraform. Therefore outside changes will be reverted by terraform from now on.
+
+To upgrade to this new major version from `2.x` without changes to VMs (and therefore not supporting Update Manager) do:
+1. Set variables
+  - `patch_assessment_mode="ImageDefault"`
+  - `patch_mode="AutomaticByOS"`
+  - `bypass_platform_safety_checks_on_user_schedule_enabled=false`
+  - `severity_group=""` if not already set
+2. Run `terraform plan` and check if the values of the VM planned to change
+  - If the values of the properties are planned to change, use actual values instead of the above
+
+### Added
+
+- `virtual_machine_config`: add support for the `patch_assessment_mode`, `patch_mode`properties
+  - Defaults to `AutomaticByPlatform` as a prerequisite to use Update manager
+- `virtual_machine_config`: add support for the `bypass_platform_safety_checks_on_user_schedule_enabled` property
+  - Default to `true` as a prerequisite to use Update manager
+
+### Changed
+
+- increased minimum `azurerm` version contraint to `3.7.0` to support patching properties
+
+### Removed
+
+- default value for `severity_group` to encourage use of update management
 
 ## [2.1.0] - 2023-11-21
 

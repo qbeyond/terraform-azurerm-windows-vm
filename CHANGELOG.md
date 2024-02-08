@@ -11,6 +11,8 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - added options for setting patch mode, patch assesment mode and bypass_platform_safety_checks_on_user_schedule_enabled setting since they are necessary to 
     be true for azure update manager. All default to true
 - upgrading to this version without using update management requires to change options to false
+- increased azurerm version contraint to use patch_mode options
+- removed default value for severity group monthly to prevent conflicts with new update management
 
 # [2.1.0] - 2023-11-21
 

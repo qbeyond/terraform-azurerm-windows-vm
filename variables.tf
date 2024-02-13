@@ -61,6 +61,9 @@ variable "virtual_machine_config" {
     tags                      = optional(map(string))
     timezone                  = optional(string, "UTC")
     write_accelerator_enabled = optional(bool, false)
+    patch_assessment_mode     = optional(string, "AutomaticByPlatform")
+    patch_mode                = optional(string, "AutomaticByPlatform")
+    bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
   })
   validation {
     condition     = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)
@@ -88,14 +91,17 @@ variable "virtual_machine_config" {
       (More timezone names: https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/).
     write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
       be activated on Premium_LRS disks and caching deactivated. Defaults to false.
+    patch_assessment_mode: Specifies the mode of VM Guest Patching for the Virtual Machine.
+    patch_mode:  Specifies the mode of in-guest patching to this Windows Virtual Machine.
+    bypass_platform_safety_checks_on_user_schedule_enabled: This setting ensures that machines are patched by using your configured schedules and not autopatched.
+       Can only be set to true when patch_mode is set to AutomaticByPlatform.
   ```
   DOC
 }
 
 variable "severity_group" {
   type        = string
-  default     = ""
-  description = "The severity group of the virtual machine."
+  description = "The severity group of the virtual machine. Added as value of tag `Severity Group Monthly`."
 }
 
 variable "update_allowed" {

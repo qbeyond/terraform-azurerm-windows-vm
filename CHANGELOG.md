@@ -6,7 +6,37 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
  
 ## [Unreleased]
 
-# [2.1.0] - 2023-11-21
+## [3.0.0] - 2024-02-08
+
+### Upgrade
+
+Please note, that this upgrade makes the above properties managed by terraform. Therefore outside changes will be reverted by terraform from now on.
+
+To upgrade to this new major version from `2.x` without changes to VMs (and therefore not supporting Update Manager) do:
+1. Set variables
+  - `patch_assessment_mode="ImageDefault"`
+  - `patch_mode="AutomaticByOS"`
+  - `bypass_platform_safety_checks_on_user_schedule_enabled=false`
+  - `severity_group=""` if not already set
+2. Run `terraform plan` and check if the values of the VM planned to change
+  - If the values of the properties are planned to change, use actual values instead of the above
+
+### Added
+
+- `virtual_machine_config`: add support for the `patch_assessment_mode`, `patch_mode`properties
+  - Defaults to `AutomaticByPlatform` as a prerequisite to use Update manager
+- `virtual_machine_config`: add support for the `bypass_platform_safety_checks_on_user_schedule_enabled` property
+  - Default to `true` as a prerequisite to use Update manager
+
+### Changed
+
+- increased minimum `azurerm` version contraint to `3.7.0` to support patching properties
+
+### Removed
+
+- default value for `severity_group` to encourage use of update management
+
+## [2.1.0] - 2023-11-21
 
 Apply a default timezone for VM configuration. Default value: UTC
 
@@ -14,7 +44,7 @@ Apply a default timezone for VM configuration. Default value: UTC
 
 - timezone as virtual maching config variable. Default: UTC
 
-# [2.0.0] - 2023-10-18
+## [2.0.0] - 2023-10-18
 
 Apply a default naming convention for disks. To upgrade to the new version from a previous version, use the `os_disk` and `data_disks` of `name_overrides` to avoid recreating the disks.
 

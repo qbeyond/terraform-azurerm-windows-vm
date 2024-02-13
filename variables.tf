@@ -101,7 +101,7 @@ variable "virtual_machine_config" {
 
 variable "severity_group" {
   type        = string
-  description = "The severity group of the virtual machine."
+  description = "The severity group of the virtual machine. Added as value of tag `Severity Group Monthly`."
 }
 
 variable "update_allowed" {

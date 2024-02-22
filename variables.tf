@@ -123,28 +123,44 @@ variable "admin_password" {
 
 variable "data_disks" {
   type = map(object({
-    lun                       = number
-    disk_size_gb              = number
-    storage_account_type      = optional(string, "StandardSSD_LRS")
-    caching                   = optional(string, "None")
-    create_option             = optional(string, "Empty")
-    write_accelerator_enabled = optional(bool, false)
+    lun                        = number
+    disk_size_gb               = number
+    zone                       = optional(string)
+    caching                    = optional(string, "ReadWrite")
+    create_option              = optional(string, "Empty")
+    storage_account_type       = optional(string, "StandardSSD_LRS")
+    write_accelerator_enabled  = optional(bool, false)
+    on_demand_bursting_enabled = optional(bool, false)
   }))
   validation {
     condition     = length([for v in var.data_disks : v.lun]) == length(distinct([for v in var.data_disks : v.lun]))
     error_message = "One or more of the lun parameters in the map are duplicates."
   }
+  validation {
+    condition     = alltrue([for o in var.data_disks : contains(["Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "StandardSSD_ZRS", "Premium_ZRS"], o.storage_account_type)])
+    error_message = "Possible values are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS for storage_account_type"
+  }
+  validation {
+    condition     = (alltrue([for o in var.data_disks : contains(["Premium_LRS", "Premium_ZRS"], o.storage_account_type)]) && alltrue([for o in var.data_disks : o.write_accelerator_enabled == true]) && alltrue([for o in var.data_disks : o.caching == "None"])) || (alltrue([for o in var.data_disks : o.write_accelerator_enabled == false]))
+    error_message = "write_accelerator_enabled, can only be activated on Premium disks and caching deactivated."
+  }
+  validation {
+    condition     = (alltrue([for o in var.data_disks : contains(["Premium_LRS", "Premium_ZRS"], o.storage_account_type)]) && alltrue([for o in var.data_disks : o.on_demand_bursting_enabled == true])) || (alltrue([for o in var.data_disks : o.on_demand_bursting_enabled == false]))
+    error_message = "If enable on demand bursting, possible storage_account_type values are Premium_LRS and Premium_ZRS."
+  }
   default     = {}
   description = <<-DOC
   ```
-   <logical name of the data disk> = {
+   <name of the data disk> = {
     lun: Number of the lun.
     disk_size_gb: The size of the data disk.
+    zone: Optionally specify an availibility zone for the vm. Values 1, 2 or 3.
     storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.
     caching: Optionally activate disk caching. Defaults to None.
     create_option: Optionally change the create option. Defaults to Empty disk.
     write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only
-      be activated on Premium_LRS disks and caching deactivated. Defaults to false.
+      be activated on Premium disks and caching deactivated. Defaults to false.
+    on_demand_bursting_enabled: Optionally activate disk bursting. Only for Premium disk. Default false.
    }
   ```
   DOC

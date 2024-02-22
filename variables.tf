@@ -70,6 +70,9 @@ variable "virtual_machine_config" {
     availability_set_id          = optional(string)
     write_accelerator_enabled    = optional(bool, false)
     proximity_placement_group_id = optional(string)
+    patch_assessment_mode        = optional(string, "AutomaticByPlatform")
+    patch_mode                   = optional(string, "AutomaticByPlatform")
+    bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
   })
   validation {
     condition     = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)
@@ -106,14 +109,17 @@ variable "virtual_machine_config" {
     write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
       be activated on Premium_LRS disks and caching deactivated. Defaults to false.
     proximity_placement_group_id: (Optional) The ID of the Proximity Placement Group which the Virtual Machine should be assigned to.
+    patch_assessment_mode: Specifies the mode of VM Guest Patching for the Virtual Machine.
+    patch_mode:  Specifies the mode of in-guest patching to this Windows Virtual Machine.
+    bypass_platform_safety_checks_on_user_schedule_enabled: This setting ensures that machines are patched by using your configured schedules and not autopatched.
+       Can only be set to true when patch_mode is set to AutomaticByPlatform.
   ```
   DOC
 }
 
 variable "severity_group" {
   type        = string
-  default     = ""
-  description = "The severity group of the virtual machine."
+  description = "The severity group of the virtual machine. Added as value of tag `Severity Group Monthly`."
 }
 
 variable "update_allowed" {

@@ -70,6 +70,9 @@ resource "azurerm_windows_virtual_machine" "this" {
   zone                         = var.virtual_machine_config.zone
   tags                         = local.virtual_machine.tags
   timezone                     = var.virtual_machine_config.timezone
+  patch_mode                   = var.virtual_machine_config.patch_mode
+  patch_assessment_mode        = var.virtual_machine_config.patch_assessment_mode
+  bypass_platform_safety_checks_on_user_schedule_enabled = var.virtual_machine_config.bypass_platform_safety_checks_on_user_schedule_enabled
 
   lifecycle {
     prevent_destroy = true

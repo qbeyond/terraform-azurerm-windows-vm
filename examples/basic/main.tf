@@ -16,6 +16,7 @@ module "virtual_machine" {
   admin_password      = "H3ll0W0rld!"
   resource_group_name = azurerm_resource_group.this.name
   subnet              = azurerm_subnet.this
+  severity_group      = "01-first-monday-2000-csu-reboot"
 }
 
 resource "azurerm_resource_group" "this" {

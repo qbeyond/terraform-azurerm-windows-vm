@@ -62,7 +62,6 @@ module "virtual_machine" {
       "${local.managed_disk_name}" = "Override"
     }
   }
-  severity_group = "01-first-monday-2000-csu-reboot"
 }
 
 resource "azurerm_resource_group" "this" {

@@ -34,7 +34,7 @@ variable "nic_config" {
     private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.
     dns_servers: Optionally specify a list of dns servers for the nic.
     enable_accelerated_networking: Enabled Accelerated networking (SR-IOV) on the NIC. The machine SKU must support this feature.
-    nsg: Optinally specify the object of a network security group that will be assigned to the nic.    
+    nsg: Although it is discouraged you can optionally assign an NSG to the NIC. Optionally specify a NSG object.
   ```
   DOC
 }
@@ -164,7 +164,7 @@ variable "data_disks" {
   default     = {}
   description = <<-DOC
   ```
-   <name of the data disk> = {
+   <logical name of the data disk> = {
     lun: Number of the lun.
     disk_size_gb: The size of the data disk.
     storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.

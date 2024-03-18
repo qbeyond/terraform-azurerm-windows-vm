@@ -1,4 +1,4 @@
-# Module
+# Windows VM
 [![GitHub tag](https://img.shields.io/github/tag/qbeyond/terraform-azurerm-windows-vm.svg)](https://registry.terraform.io/modules/qbeyond/windows-vm/azurerm/latest)
 [![License](https://img.shields.io/github/license/qbeyond/terraform-azurerm-windows-vm.svg)](https://github.com/qbeyond/terraform-azurerm-windows-vm/blob/main/LICENSE)
 

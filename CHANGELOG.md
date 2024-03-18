@@ -6,6 +6,17 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
  
 ## [Unreleased]
 
+## [4.0.0] - 2024-03-18
+
+### Added
+
+### Changed 
+- fixed README title
+
+### Removed
+- removed old mma 
+
+
 ## [3.0.0] - 2024-02-08
 
 ### Upgrade

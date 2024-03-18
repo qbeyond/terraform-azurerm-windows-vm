@@ -46,7 +46,6 @@ module "virtual_machine" {
     }
   }
 
-  log_analytics_agent = azurerm_log_analytics_workspace.this
 
   name_overrides = {
     nic             = local.nic
@@ -103,10 +102,4 @@ resource "azurerm_network_security_group" "this" {
   }
 }
 
-resource "azurerm_log_analytics_workspace" "this" {
-  name                = local.law_name
-  location            = local.location
-  resource_group_name = azurerm_resource_group.this.name
-  sku                 = "PerGB2018"
-  retention_in_days   = 30
-}
+

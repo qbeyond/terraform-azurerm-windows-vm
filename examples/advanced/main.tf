@@ -30,6 +30,10 @@ module "virtual_machine" {
     os_disk_name                 = "DiskOverride"
     timezone                     = "Azores Standard Time"
 
+    patch_assessment_mode                                  = "AutomaticByPlatform"
+    patch_mode                                             = "AutomaticByPlatform"
+    bypass_platform_safety_checks_on_user_schedule_enabled = true
+
     tags = {
       "Environment" = "prd"
     }
@@ -48,7 +52,6 @@ module "virtual_machine" {
     }
   }
 
-  log_analytics_agent = azurerm_log_analytics_workspace.this
   additional_network_interface_ids = [azurerm_network_interface.additional_nic_01.id]
   severity_group                   = "01-third-tuesday-0200-XCSUFEDTG-reboot"
   update_allowed                   = true
@@ -137,12 +140,4 @@ resource "azurerm_network_security_group" "this" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
-}
-
-resource "azurerm_log_analytics_workspace" "this" {
-  name                = local.law_name
-  location            = local.location
-  resource_group_name = azurerm_resource_group.this.name
-  sku                 = "PerGB2018"
-  retention_in_days   = 30
 }

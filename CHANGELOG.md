@@ -6,7 +6,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
  
 ## [Unreleased]
 
-## [3.1.0] - 2024-02-22
+## [4.1.0] - 2024-03-25
 
 Added new features.
 
@@ -17,6 +17,16 @@ Support:
   - Accelearate networking.
   - Proximity placement group.
   - Availability set.
+
+## [4.0.0] - 2024-03-18
+
+### Added
+
+### Changed 
+- fixed README title
+
+### Removed
+- removed old mma 
 
 ## [3.0.0] - 2024-02-08
 

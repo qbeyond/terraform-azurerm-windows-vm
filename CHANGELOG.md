@@ -6,6 +6,18 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
  
 ## [Unreleased]
 
+## [4.1.0] - 2024-03-25
+
+Added new features.
+
+### Added
+
+Support:
+  - Support multiples network interfaces (NICs).
+  - Accelearate networking.
+  - Proximity placement group.
+  - Availability set.
+
 ## [4.0.0] - 2024-03-18
 
 ### Added
@@ -15,7 +27,6 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Removed
 - removed old mma 
-
 
 ## [3.0.0] - 2024-02-08
 

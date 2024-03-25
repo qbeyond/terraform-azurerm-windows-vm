@@ -87,6 +87,10 @@ module "virtual_machine" {
     os_disk_name                 = "DiskOverride"
     timezone                     = "Azores Standard Time"
 
+    patch_assessment_mode                                  = "AutomaticByPlatform"
+    patch_mode                                             = "AutomaticByPlatform"
+    bypass_platform_safety_checks_on_user_schedule_enabled = true
+
     tags = {
       "Environment" = "prd"
     }
@@ -105,7 +109,6 @@ module "virtual_machine" {
     }
   }
 
-  log_analytics_agent = azurerm_log_analytics_workspace.this
   additional_network_interface_ids = [azurerm_network_interface.additional_nic_01.id]
   severity_group                   = "01-third-tuesday-0200-XCSUFEDTG-reboot"
   update_allowed                   = true
@@ -195,8 +198,6 @@ resource "azurerm_network_security_group" "this" {
     destination_address_prefix = "*"
   }
 }
-
-
 ```
 
 ## Requirements
@@ -213,9 +214,9 @@ resource "azurerm_network_security_group" "this" {
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Name of the resource group where the resources will be created. | `string` | n/a | yes |
 | <a name="input_severity_group"></a> [severity\_group](#input\_severity\_group) | The severity group of the virtual machine. Added as value of tag `Severity Group Monthly`. | `string` | n/a | yes |
 | <a name="input_subnet"></a> [subnet](#input\_subnet) | The variable takes the subnet as input and takes the id and the address prefix for further configuration. | <pre>object({<br>    id               = string<br>    address_prefixes = list(string)<br>  })</pre> | n/a | yes |
-| <a name="input_virtual_machine_config"></a> [virtual\_machine\_config](#input\_virtual\_machine\_config) | <pre>  hostname: Hostname system.<br>  size: The size of the vm. Possible values can be seen here: https://learn.microsoft.com/en-us/azure/virtual-machines/sizes<br>  os_sku: The os that will be running on the vm.<br>  location: The location of the virtual machine.<br>  os_version: Optionally specify an os version for the chosen sku. Defaults to latest.<br>  admin_username: Optionally choose the admin_username of the vm. Defaults to loc_sysadmin. <br>    The local admin name could be changed by the gpo in the target ad.<br>  os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.<br>  os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.<br>  os_disk_size_gb: Optionally change the size of the os disk. Defaults to be specified by image.<br>  tags: Optionally specify tags in as a map.<br>  timezone: Optionally change the timezone of the VM. Defaults to UTC.<br>    (More timezone names: https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/).<br>  zone: Optionally specify an availibility zone for the vm.<br>  availability_set_id: Optionally specify an availibilty set for the vm.<br>  write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only<br>    be activated on Premium_LRS disks and caching deactivated. Defaults to false.<br>  proximity_placement_group_id: (Optional) The ID of the Proximity Placement Group which the Virtual Machine should be assigned to.<br>  patch_assessment_mode: Specifies the mode of VM Guest Patching for the Virtual Machine.<br>  patch_mode:  Specifies the mode of in-guest patching to this Windows Virtual Machine.<br>  bypass_platform_safety_checks_on_user_schedule_enabled: This setting ensures that machines are patched by using your configured schedules and not autopatched.<br>     Can only be set to true when patch_mode is set to AutomaticByPlatform.</pre> | <pre>object({<br>    hostname                     = string<br>    size                         = string<br>    os_sku                       = string<br>    location                     = string<br>    os_version                   = optional(string, "latest")<br>    admin_username               = optional(string, "loc_sysadmin")<br>    os_disk_caching              = optional(string, "ReadWrite")<br>    os_disk_storage_type         = optional(string, "StandardSSD_LRS")<br>    os_disk_size_gb              = optional(number)<br>    tags                         = optional(map(string))<br>    timezone                     = optional(string, "UTC")<br>    zone                         = optional(string)<br>    availability_set_id          = optional(string)<br>    write_accelerator_enabled    = optional(bool, false)<br>    proximity_placement_group_id = optional(string)<br>    patch_assessment_mode        = optional(string, "AutomaticByPlatform")<br>    patch_mode                   = optional(string, "AutomaticByPlatform")<br>    bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)<br>  })</pre> | n/a | yes |
+| <a name="input_virtual_machine_config"></a> [virtual\_machine\_config](#input\_virtual\_machine\_config) | <pre>size: The size of the vm. Possible values can be seen here: https://learn.microsoft.com/en-us/azure/virtual-machines/sizes<br>  os_sku: The os that will be running on the vm.<br>  location: The location of the virtual machine.<br>  os_version: Optionally specify an os version for the chosen sku. Defaults to latest.<br>  admin_username: Optionally choose the admin_username of the vm. Defaults to loc_sysadmin. <br>    The local admin name could be changed by the gpo in the target ad.<br>  os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.<br>  os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.<br>  os_disk_size_gb: Optionally change the size of the os disk. Defaults to be specified by image.<br>  tags: Optionally specify tags in as a map.<br>  timezone: Optionally change the timezone of the VM. Defaults to UTC.<br>    (More timezone names: https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/).<br>  zone: Optionally specify an availibility zone for the vm.<br>  availability_set_id: Optionally specify an availibilty set for the vm.<br>  write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only<br>    be activated on Premium_LRS disks and caching deactivated. Defaults to false.<br>  proximity_placement_group_id: (Optional) The ID of the Proximity Placement Group which the Virtual Machine should be assigned to.<br>  patch_assessment_mode: Specifies the mode of VM Guest Patching for the Virtual Machine.<br>  patch_mode:  Specifies the mode of in-guest patching to this Windows Virtual Machine.<br>  bypass_platform_safety_checks_on_user_schedule_enabled: This setting ensures that machines are patched by using your configured schedules and not autopatched.<br>     Can only be set to true when patch_mode is set to AutomaticByPlatform.</pre> | <pre>object({<br>    hostname                     = string<br>    size                         = string<br>    os_sku                       = string<br>    location                     = string<br>    os_version                   = optional(string, "latest")<br>    admin_username               = optional(string, "loc_sysadmin")<br>    os_disk_caching              = optional(string, "ReadWrite")<br>    os_disk_storage_type         = optional(string, "StandardSSD_LRS")<br>    os_disk_size_gb              = optional(number)<br>    tags                         = optional(map(string))<br>    timezone                     = optional(string, "UTC")<br>    zone                         = optional(string)<br>    availability_set_id          = optional(string)<br>    write_accelerator_enabled    = optional(bool, false)<br>    proximity_placement_group_id = optional(string)<br>    patch_assessment_mode        = optional(string, "AutomaticByPlatform")<br>    patch_mode                   = optional(string, "AutomaticByPlatform")<br>    bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)<br>  })</pre> | n/a | yes |
 | <a name="input_additional_network_interface_ids"></a> [additional\_network\_interface\_ids](#input\_additional\_network\_interface\_ids) | List of ids for additional azurerm\_network\_interface. | `list(string)` | `[]` | no |
-| <a name="input_data_disks"></a> [data\_disks](#input\_data\_disks) | <pre>\<logical name of the data disk\> = {<br>  lun: Number of the lun.<br>  disk_size_gb: The size of the data disk.<br>  storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.<br>  caching: Optionally activate disk caching. Defaults to None.<br>  create_option: Optionally change the create option. Defaults to Empty disk.<br>  write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only<br>    be activated on Premium disks and caching deactivated. Defaults to false.<br>  on_demand_bursting_enabled: Optionally activate disk bursting. Only for Premium disk. Default false.<br> }</pre> | <pre>map(object({<br>    lun                        = number<br>    disk_size_gb               = number<br>    caching                    = optional(string, "ReadWrite")<br>    create_option              = optional(string, "Empty")<br>    storage_account_type       = optional(string, "StandardSSD_LRS")<br>    write_accelerator_enabled  = optional(bool, false)<br>    on_demand_bursting_enabled = optional(bool, false)<br>}))</pre> | `{}` | no |
+| <a name="input_data_disks"></a> [data\_disks](#input\_data\_disks) | <pre><logical name of the data disk> = {<br>  lun: Number of the lun.<br>  disk_size_gb: The size of the data disk.<br>  storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.<br>  caching: Optionally activate disk caching. Defaults to None.<br>  create_option: Optionally change the create option. Defaults to Empty disk.<br>  write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only<br>    be activated on Premium disks and caching deactivated. Defaults to false.<br>  on_demand_bursting_enabled: Optionally activate disk bursting. Only for Premium disk. Default false.<br> }</pre> | <pre>map(object({<br>    lun                        = number<br>    disk_size_gb               = number<br>    caching                    = optional(string, "ReadWrite")<br>    create_option              = optional(string, "Empty")<br>    storage_account_type       = optional(string, "StandardSSD_LRS")<br>    write_accelerator_enabled  = optional(bool, false)<br>    on_demand_bursting_enabled = optional(bool, false)<br>  }))</pre> | `{}` | no |
 | <a name="input_name_overrides"></a> [name\_overrides](#input\_name\_overrides) | Possibility to override names that will be generated according to q.beyond naming convention. | <pre>object({<br>    nic             = optional(string)<br>    nic_ip_config   = optional(string)<br>    public_ip       = optional(string)<br>    virtual_machine = optional(string)<br>    os_disk         = optional(string)<br>    data_disks      = optional(map(string), {})<br>  })</pre> | `{}` | no |
 | <a name="input_nic_config"></a> [nic\_config](#input\_nic\_config) | <pre>private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.<br>  dns_servers: Optionally specify a list of dns servers for the nic.<br>  enable_accelerated_networking: Enabled Accelerated networking (SR-IOV) on the NIC. The machine SKU must support this feature.<br>  nsg: Although it is discouraged you can optionally assign an NSG to the NIC. Optionally specify a NSG object.</pre> | <pre>object({<br>    private_ip                    = optional(string)<br>    dns_servers                   = optional(list(string))<br>    enable_accelerated_networking = optional(bool, false)<br>    nsg = optional(object({<br>      id = string<br>    }))<br>  })</pre> | `{}` | no |
 | <a name="input_public_ip_config"></a> [public\_ip\_config](#input\_public\_ip\_config) | <pre>enabled: Optionally select true if a public ip should be created. Defaults to false.<br>  allocation_method: The allocation method of the public ip that will be created. Defaults to static.</pre> | <pre>object({<br>    enabled           = bool<br>    allocation_method = optional(string, "Static")<br>  })</pre> | <pre>{<br>  "enabled": false<br>}</pre> | no |
@@ -227,40 +228,41 @@ resource "azurerm_network_security_group" "this" {
 | <a name="output_data_disks"></a> [data\_disks](#output\_data\_disks) | n/a |
 | <a name="output_virtual_machine"></a> [virtual\_machine](#output\_virtual\_machine) | n/a |
 
-## Resource types
+      ## Resource types
 
-| Type | Used |
-|------|-------|
-| [azurerm_managed_disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk) | 1 |
-| [azurerm_network_interface](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface) | 1 |
-| [azurerm_network_interface_security_group_association](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface_security_group_association) | 1 |
-| [azurerm_public_ip](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) | 1 |
-| [azurerm_virtual_machine_data_disk_attachment](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_data_disk_attachment) | 1 |
-| [azurerm_windows_virtual_machine](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/windows_virtual_machine) | 1 |
+      | Type | Used |
+      |------|-------|
+        | [azurerm_managed_disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk) | 1 |
+        | [azurerm_network_interface](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface) | 1 |
+        | [azurerm_network_interface_security_group_association](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface_security_group_association) | 1 |
+        | [azurerm_public_ip](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) | 1 |
+        | [azurerm_virtual_machine_data_disk_attachment](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_data_disk_attachment) | 1 |
+        | [azurerm_windows_virtual_machine](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/windows_virtual_machine) | 1 |
 
-**`Used` only includes resource blocks.** `for_each` and `count` meta arguments, as well as resource blocks of modules are not considered.
-
+      **`Used` only includes resource blocks.** `for_each` and `count` meta arguments, as well as resource blocks of modules are not considered.
+    
 ## Modules
 
 No modules.
 
-## Resources by Files
+        ## Resources by Files
 
-### data_disk.tf
+            ### data_disk.tf
 
-| Name | Type |
-|------|------|
-| [azurerm_managed_disk.data_disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk) | resource |
-| [azurerm_virtual_machine_data_disk_attachment.data_disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_data_disk_attachment) | resource |
+            | Name | Type |
+            |------|------|
+                  | [azurerm_managed_disk.data_disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk) | resource |
+                  | [azurerm_virtual_machine_data_disk_attachment.data_disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_data_disk_attachment) | resource |
 
-### main.tf
+            ### main.tf
 
-| Name | Type |
-|------|------|
-| [azurerm_network_interface.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface) | resource |
-| [azurerm_network_interface_security_group_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface_security_group_association) | resource |
-| [azurerm_public_ip.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) | resource |
-| [azurerm_windows_virtual_machine.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/windows_virtual_machine) | resource |
+            | Name | Type |
+            |------|------|
+                  | [azurerm_network_interface.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface) | resource |
+                  | [azurerm_network_interface_security_group_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface_security_group_association) | resource |
+                  | [azurerm_public_ip.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) | resource |
+                  | [azurerm_windows_virtual_machine.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/windows_virtual_machine) | resource |
+    
 <!-- END_TF_DOCS -->
 
 ## Contribute

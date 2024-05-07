@@ -186,6 +186,7 @@ resource "azurerm_network_security_group" "this" {
 | Name | Description |
 |------|-------------|
 | <a name="output_data_disks"></a> [data\_disks](#output\_data\_disks) | n/a |
+| <a name="output_network_interface"></a> [network\_interface](#output\_network\_interface) | n/a |
 | <a name="output_virtual_machine"></a> [virtual\_machine](#output\_virtual\_machine) | n/a |
 
       ## Resource types

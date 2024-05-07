@@ -6,6 +6,14 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
  
 ## [Unreleased]
 
+## [4.1.0] - 2024-05-07
+
+### Added
+- Set tags at all resources created in this repository that support tags
+
+### Removed
+- removed "ignore changes" for tags
+
 ## [4.0.0] - 2024-03-18
 
 ### Added

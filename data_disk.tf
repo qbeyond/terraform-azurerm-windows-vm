@@ -7,11 +7,9 @@ resource "azurerm_managed_disk" "data_disk" {
   create_option        = each.value["create_option"]
   disk_size_gb         = each.value["disk_size_gb"]
   zone                 = var.virtual_machine_config.zone
+  tags                 = var.tags
   lifecycle {
     prevent_destroy = true
-    ignore_changes = [
-      tags
-    ]
   }
 }
 

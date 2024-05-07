@@ -47,22 +47,21 @@ variable "subnet" {
 
 variable "virtual_machine_config" {
   type = object({
-    hostname                  = string
-    size                      = string
-    os_sku                    = string
-    location                  = string
-    availability_set_id       = optional(string)
-    zone                      = optional(string)
-    os_version                = optional(string, "latest")
-    admin_username            = optional(string, "loc_sysadmin")
-    os_disk_caching           = optional(string, "ReadWrite")
-    os_disk_storage_type      = optional(string, "StandardSSD_LRS")
-    os_disk_size_gb           = optional(number)
-    tags                      = optional(map(string))
-    timezone                  = optional(string, "UTC")
-    write_accelerator_enabled = optional(bool, false)
-    patch_assessment_mode     = optional(string, "AutomaticByPlatform")
-    patch_mode                = optional(string, "AutomaticByPlatform")
+    hostname                                               = string
+    size                                                   = string
+    os_sku                                                 = string
+    location                                               = string
+    availability_set_id                                    = optional(string)
+    zone                                                   = optional(string)
+    os_version                                             = optional(string, "latest")
+    admin_username                                         = optional(string, "loc_sysadmin")
+    os_disk_caching                                        = optional(string, "ReadWrite")
+    os_disk_storage_type                                   = optional(string, "StandardSSD_LRS")
+    os_disk_size_gb                                        = optional(number)
+    timezone                                               = optional(string, "UTC")
+    write_accelerator_enabled                              = optional(bool, false)
+    patch_assessment_mode                                  = optional(string, "AutomaticByPlatform")
+    patch_mode                                             = optional(string, "AutomaticByPlatform")
     bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
   })
   validation {
@@ -161,6 +160,12 @@ variable "name_overrides" {
     data_disks      = optional(map(string), {})
   })
   description = "Possibility to override names that will be generated according to q.beyond naming convention."
+  default     = {}
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "A mapping of tags to add to the resources created in this module"
   default     = {}
 }
 

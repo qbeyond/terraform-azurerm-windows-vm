@@ -5,11 +5,7 @@ resource "azurerm_public_ip" "this" {
   location            = var.virtual_machine_config.location
   allocation_method   = var.public_ip_config.allocation_method
 
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
+  tags = var.tags
 }
 
 resource "azurerm_network_interface" "this" {
@@ -26,11 +22,7 @@ resource "azurerm_network_interface" "this" {
     public_ip_address_id          = var.public_ip_config.enabled ? azurerm_public_ip.this[0].id : null
   }
 
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
+  tags = var.tags
 }
 
 resource "azurerm_network_interface_security_group_association" "this" {

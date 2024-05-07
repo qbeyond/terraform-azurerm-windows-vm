@@ -13,6 +13,7 @@ module "virtual_machine" {
     os_version           = "latest"
     os_disk_storage_type = "Standard_LRS"
   }
+  severity_group      = "01-first-monday-2000-csu-reboot"
   admin_password      = "H3ll0W0rld!"
   resource_group_name = azurerm_resource_group.this.name
   subnet              = azurerm_subnet.this

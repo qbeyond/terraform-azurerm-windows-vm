@@ -65,6 +65,10 @@ module "virtual_machine" {
       "${local.managed_disk_name}" = "Override"
     }
   }
+
+  tags = {
+    "example" = "examplevalue"
+  }
 }
 
 resource "azurerm_resource_group" "this" {

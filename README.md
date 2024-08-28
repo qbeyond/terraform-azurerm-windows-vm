@@ -108,7 +108,9 @@ module "virtual_machine" {
       write_accelerator_enabled = false
     }
   }
-
+  tags = {
+    "example" = "examplevalue"
+  }
   additional_network_interface_ids = [azurerm_network_interface.additional_nic_01.id]
   severity_group                   = "01-third-tuesday-0200-XCSUFEDTG-reboot"
   update_allowed                   = true
@@ -220,12 +222,14 @@ resource "azurerm_network_security_group" "this" {
 | <a name="input_name_overrides"></a> [name\_overrides](#input\_name\_overrides) | Possibility to override names that will be generated according to q.beyond naming convention. | <pre>object({<br>    nic             = optional(string)<br>    nic_ip_config   = optional(string)<br>    public_ip       = optional(string)<br>    virtual_machine = optional(string)<br>    os_disk         = optional(string)<br>    data_disks      = optional(map(string), {})<br>  })</pre> | `{}` | no |
 | <a name="input_nic_config"></a> [nic\_config](#input\_nic\_config) | <pre>private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.<br>  dns_servers: Optionally specify a list of dns servers for the nic.<br>  enable_accelerated_networking: Enabled Accelerated networking (SR-IOV) on the NIC. The machine SKU must support this feature.<br>  nsg: Although it is discouraged you can optionally assign an NSG to the NIC. Optionally specify a NSG object.</pre> | <pre>object({<br>    private_ip                    = optional(string)<br>    dns_servers                   = optional(list(string))<br>    enable_accelerated_networking = optional(bool, false)<br>    nsg = optional(object({<br>      id = string<br>    }))<br>  })</pre> | `{}` | no |
 | <a name="input_public_ip_config"></a> [public\_ip\_config](#input\_public\_ip\_config) | <pre>enabled: Optionally select true if a public ip should be created. Defaults to false.<br>  allocation_method: The allocation method of the public ip that will be created. Defaults to static.</pre> | <pre>object({<br>    enabled           = bool<br>    allocation_method = optional(string, "Static")<br>  })</pre> | <pre>{<br>  "enabled": false<br>}</pre> | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | A mapping of tags to add to the resources created in this module | `map(string)` | `{}` | no |
 | <a name="input_update_allowed"></a> [update\_allowed](#input\_update\_allowed) | Set the tag `Update allowed`. `True` will set `yes`, `false` to `no`. | `bool` | `true` | no |
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | <a name="output_data_disks"></a> [data\_disks](#output\_data\_disks) | n/a |
+| <a name="output_network_interface"></a> [network\_interface](#output\_network\_interface) | n/a |
 | <a name="output_virtual_machine"></a> [virtual\_machine](#output\_virtual\_machine) | n/a |
 
       ## Resource types

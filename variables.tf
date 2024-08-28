@@ -196,4 +196,10 @@ variable "name_overrides" {
   default     = {}
 }
 
+variable "tags" {
+  type        = map(string)
+  description = "A mapping of tags to add to the resources created in this module"
+  default     = {}
+}
+
 

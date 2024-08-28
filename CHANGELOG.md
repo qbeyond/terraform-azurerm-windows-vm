@@ -6,7 +6,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
  
 ## [Unreleased]
 
-## [4.1.0] - 2024-03-25
+## [4.2.0] - 2024-08-28
 
 Added new features.
 
@@ -17,6 +17,15 @@ Support:
   - Accelearate networking.
   - Proximity placement group.
   - Availability set.
+
+## [4.1.0] - 2024-05-07
+
+### Added
+- Set tags at all resources created in this repository that support tags
+- Output of the created network interface
+
+### Removed
+- removed "ignore changes" for tags
 
 ## [4.0.0] - 2024-03-18
 

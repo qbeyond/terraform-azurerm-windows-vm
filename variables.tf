@@ -141,6 +141,7 @@ variable "data_disks" {
     disk_size_gb               = number
     caching                    = optional(string, "ReadWrite")
     create_option              = optional(string, "Empty")
+    source_resource_id         = optional(string)
     storage_account_type       = optional(string, "StandardSSD_LRS")
     write_accelerator_enabled  = optional(bool, false)
     on_demand_bursting_enabled = optional(bool, false)
@@ -161,6 +162,12 @@ variable "data_disks" {
     condition     = (alltrue([for o in var.data_disks : contains(["Premium_LRS", "Premium_ZRS"], o.storage_account_type)]) && alltrue([for o in var.data_disks : o.on_demand_bursting_enabled == true])) || (alltrue([for o in var.data_disks : o.on_demand_bursting_enabled == false]))
     error_message = "If enable on demand bursting, possible storage_account_type values are Premium_LRS and Premium_ZRS."
   }
+  validation {
+    condition     = alltrue([for o in var.data_disks : (
+      (o.source_resource_id != null && contains(["Copy", "Restore"], o.create_option) || (o.create_option == "Empty" && o.source_resource_id == null))
+    )])
+    error_message = "When a data disk source resource ID is specified then create option must be either 'Copy' or 'Restore'."
+  }
   default     = {}
   description = <<-DOC
   ```
@@ -170,6 +177,8 @@ variable "data_disks" {
     storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.
     caching: Optionally activate disk caching. Defaults to None.
     create_option: Optionally change the create option. Defaults to Empty disk.
+    source_resource_id: (Optional) The ID of an existing Managed Disk or Snapshot to copy when create_option is Copy or
+      the recovery point to restore when create_option is Restore. Changing this forces a new resource to be created.
     write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only
       be activated on Premium disks and caching deactivated. Defaults to false.
     on_demand_bursting_enabled: Optionally activate disk bursting. Only for Premium disk. Default false.

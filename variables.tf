@@ -64,7 +64,6 @@ variable "virtual_machine_config" {
     os_disk_caching              = optional(string, "ReadWrite")
     os_disk_storage_type         = optional(string, "StandardSSD_LRS")
     os_disk_size_gb              = optional(number)
-    tags                         = optional(map(string))
     timezone                     = optional(string, "UTC")
     zone                         = optional(string)
     availability_set_id          = optional(string)
@@ -101,7 +100,6 @@ variable "virtual_machine_config" {
     os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.
     os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.
     os_disk_size_gb: Optionally change the size of the os disk. Defaults to be specified by image.
-    tags: Optionally specify tags in as a map.
     timezone: Optionally change the timezone of the VM. Defaults to UTC.
       (More timezone names: https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/).
     zone: Optionally specify an availibility zone for the vm.

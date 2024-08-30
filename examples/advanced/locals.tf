@@ -5,7 +5,7 @@ locals {
   subnet_name                    = "snet-examples_vm_deploy-02"
   availability_set_name          = "as-examples_vm_deploy-02"
   proximity_placement_group_name = "ppg-examples_vm_deploy-02"
-  managed_disk_name              = "disk-examples_vm_deploy-02"
+  managed_disk_name              = "examples_vm_deploy02"
   nsg_name                       = "nsg-examples_vm_deploy-02"
 
   nic             = "nic-examples_vm_deploy-02"

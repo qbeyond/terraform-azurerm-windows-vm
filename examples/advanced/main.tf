@@ -16,18 +16,20 @@ module "virtual_machine" {
   }
   virtual_machine_config = {
     hostname                     = "CUSTAPP007"
+    location                     = azurerm_resource_group.this.location
     size                         = "Standard_B1s"
     os_sku                       = "2022-datacenter-g2"
-    location                     = azurerm_resource_group.this.location
-    availability_set_id          = azurerm_availability_set.this.id
-    write_accelerator_enabled    = false
-    proximity_placement_group_id = azurerm_proximity_placement_group.this.id
     os_version                   = "latest"
-    admin_username               = "loc_admin"
+    os_disk_name                 = "DiskOverride"
+    os_disk_size_gb              = 128
     os_disk_caching              = "ReadWrite"
     os_disk_storage_type         = "Standard_LRS"
-    os_disk_size_gb              = 128
-    os_disk_name                 = "DiskOverride"
+    os_disk_write_accelerator_enabled = false
+    availability_set_id          = azurerm_availability_set.this.id
+    proximity_placement_group_id = azurerm_proximity_placement_group.this.id
+
+    admin_username               = "loc_admin"
+
     timezone                     = "Azores Standard Time"
 
     patch_assessment_mode                                  = "AutomaticByPlatform"

@@ -29,6 +29,7 @@ variable "nic_config" {
     }))
   })
   default     = {}
+  nullable    = false
   description = <<-DOC
   ```
     private_ip: Optioanlly specify a private ip to use. Otherwise it will  be allocated dynamically.
@@ -42,6 +43,7 @@ variable "nic_config" {
 variable "additional_network_interface_ids" {
   type        = list(string)
   default     = []
+  nullable    = false
   description = "List of ids for additional azurerm_network_interface."
 }
 
@@ -50,6 +52,7 @@ variable "subnet" {
     id               = string
     address_prefixes = list(string)
   })
+  nullable    = false
   description = "The variable takes the subnet as input and takes the id and the address prefix for further configuration."
 }
 
@@ -57,21 +60,21 @@ variable "virtual_machine_config" {
   type = object({
     hostname                     = string
     size                         = string
-    os_sku                       = string
     location                     = string
+    os_sku                       = string
     os_version                   = optional(string, "latest")
-    admin_username               = optional(string, "loc_sysadmin")
     os_disk_caching              = optional(string, "ReadWrite")
     os_disk_storage_type         = optional(string, "StandardSSD_LRS")
     os_disk_size_gb              = optional(number)
+    write_accelerator_enabled    = optional(bool, false)
+    admin_username               = optional(string, "loc_sysadmin")
     timezone                     = optional(string, "UTC")
     zone                         = optional(string)
     availability_set_id          = optional(string)
-    write_accelerator_enabled    = optional(bool, false)
     proximity_placement_group_id = optional(string)
     patch_assessment_mode        = optional(string, "AutomaticByPlatform")
     patch_mode                   = optional(string, "AutomaticByPlatform")
-    bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
+    bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, false)
   })
   validation {
     condition     = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)
@@ -91,21 +94,22 @@ variable "virtual_machine_config" {
   }
   description = <<-DOC
   ```
+    hostname: Name of the host system.
     size: The size of the vm. Possible values can be seen here: https://learn.microsoft.com/en-us/azure/virtual-machines/sizes
-    os_sku: The os that will be running on the vm.
     location: The location of the virtual machine.
+    os_sku: The os that will be running on the vm.
     os_version: Optionally specify an os version for the chosen sku. Defaults to latest.
-    admin_username: Optionally choose the admin_username of the vm. Defaults to loc_sysadmin. 
-      The local admin name could be changed by the gpo in the target ad.
     os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.
     os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.
     os_disk_size_gb: Optionally change the size of the os disk. Defaults to be specified by image.
+    admin_username: Optionally choose the admin_username of the vm. Defaults to loc_sysadmin.
+      The local admin name could be changed by the gpo in the target ad.
+    write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
+      be activated on Premium_LRS disks and caching deactivated. Defaults to false.
     timezone: Optionally change the timezone of the VM. Defaults to UTC.
       (More timezone names: https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/).
     zone: Optionally specify an availibility zone for the vm.
     availability_set_id: Optionally specify an availibilty set for the vm.
-    write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
-      be activated on Premium_LRS disks and caching deactivated. Defaults to false.
     proximity_placement_group_id: (Optional) The ID of the Proximity Placement Group which the Virtual Machine should be assigned to.
     patch_assessment_mode: Specifies the mode of VM Guest Patching for the Virtual Machine.
     patch_mode:  Specifies the mode of in-guest patching to this Windows Virtual Machine.
@@ -153,12 +157,22 @@ variable "data_disks" {
     error_message = "Possible values are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS for storage_account_type"
   }
   validation {
-    condition     = (alltrue([for o in var.data_disks : contains(["Premium_LRS", "Premium_ZRS"], o.storage_account_type)]) && alltrue([for o in var.data_disks : o.write_accelerator_enabled == true]) && alltrue([for o in var.data_disks : o.caching == "None"])) || (alltrue([for o in var.data_disks : o.write_accelerator_enabled == false]))
+    condition = alltrue([for o in var.data_disks : (
+      (o.write_accelerator_enabled == true && contains(["Premium_LRS", "Premium_ZRS"], o.storage_account_type) && contains(["None", "ReadOnly"], o.caching)) ||
+      (o.write_accelerator_enabled == false)
+    )])
     error_message = "write_accelerator_enabled, can only be activated on Premium disks and caching deactivated."
   }
   validation {
-    condition     = (alltrue([for o in var.data_disks : contains(["Premium_LRS", "Premium_ZRS"], o.storage_account_type)]) && alltrue([for o in var.data_disks : o.on_demand_bursting_enabled == true])) || (alltrue([for o in var.data_disks : o.on_demand_bursting_enabled == false]))
+    condition = alltrue([for o in var.data_disks : (
+      (o.on_demand_bursting_enabled == true && contains(["Premium_LRS", "Premium_ZRS"], o.storage_account_type)) ||
+      (o.on_demand_bursting_enabled == false)
+    )])
     error_message = "If enable on demand bursting, possible storage_account_type values are Premium_LRS and Premium_ZRS."
+  }
+  validation {
+    condition     = alltrue([for k, v in var.data_disks : !strcontains(k, "-")])
+    error_message = "Logical Name can't contain a '-'"
   }
   validation {
     condition     = alltrue([for o in var.data_disks : (
@@ -167,6 +181,7 @@ variable "data_disks" {
     error_message = "When a data disk source resource ID is specified then create option must be either 'Copy' or 'Restore'."
   }
   default     = {}
+  nullable    = false
   description = <<-DOC
   ```
    <logical name of the data disk> = {
@@ -179,7 +194,7 @@ variable "data_disks" {
       the recovery point to restore when create_option is Restore. Changing this forces a new resource to be created.
     write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only
       be activated on Premium disks and caching deactivated. Defaults to false.
-    on_demand_bursting_enabled: Optionally activate disk bursting. Only for Premium disk. Default false.
+    on_demand_bursting_enabled: Optionally activate disk bursting. Only for Premium disk with size to 512 Gb up. Default false.
    }
   ```
   DOC

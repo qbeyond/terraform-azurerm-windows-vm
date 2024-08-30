@@ -8,7 +8,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [5.0.0] - 2024-08-30
 
-Added new features.
+Added new features, variable change name and disk name validation.
 
 ### Added
 
@@ -19,6 +19,10 @@ Support:
 - Proximity placement group.
 - Source resource ID for disk when create from copy or recovery.
 - Disk validation of Logical Name can't contain a '-'
+
+### Changed
+
+- Variable name for os disk write_accelerator_enabled.
 
 ## [4.1.0] - 2024-05-07
 

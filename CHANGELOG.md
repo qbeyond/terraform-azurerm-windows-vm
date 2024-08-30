@@ -1,30 +1,51 @@
 # Changelog
-All notable changes to this module will be documented in this file.
- 
+
+All notable changes to this module will be documented in this file. 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
- 
+
 ## [Unreleased]
+
+## [5.0.0] - 2024-08-30
+
+Added new features, variable change name and disk name validation.
+
+### Added
+
+Support:
+
+- Support multiples network interfaces (NICs).
+- NICs accelearate networking.
+- Proximity placement group.
+- Source resource ID for disk when create from copy or recovery.
+- Disk validation of Logical Name can't contain a '-'
+
+### Changed
+
+- Variable name for os disk write_accelerator_enabled.
 
 ## [4.1.0] - 2024-05-07
 
 ### Added
+
 - Set tags at all resources created in this repository that support tags
 - Output of the created network interface
 
 ### Removed
+
 - removed "ignore changes" for tags
 
 ## [4.0.0] - 2024-03-18
 
 ### Added
 
-### Changed 
+### Changed
+
 - fixed README title
 
 ### Removed
-- removed old mma 
 
+- removed old mma
 
 ## [3.0.0] - 2024-02-08
 
@@ -33,13 +54,18 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 Please note, that this upgrade makes the above properties managed by terraform. Therefore outside changes will be reverted by terraform from now on.
 
 To upgrade to this new major version from `2.x` without changes to VMs (and therefore not supporting Update Manager) do:
+
 1. Set variables
-  - `patch_assessment_mode="ImageDefault"`
-  - `patch_mode="AutomaticByOS"`
-  - `bypass_platform_safety_checks_on_user_schedule_enabled=false`
-  - `severity_group=""` if not already set
-2. Run `terraform plan` and check if the values of the VM planned to change
-  - If the values of the properties are planned to change, use actual values instead of the above
+
+    - `patch_assessment_mode="ImageDefault"`
+    - `patch_mode="AutomaticByOS"`
+    - `bypass_platform_safety_checks_on_user_schedule_enabled=false`
+    - `severity_group=""` if not already set
+
+1. Run `terraform plan` and check if the values of the VM planned to change
+
+
+    - If the values of the properties are planned to change, use actual values instead of the above
 
 ### Added
 
@@ -75,15 +101,15 @@ Apply a default naming convention for disks. To upgrade to the new version from 
 - allow override of OsDisk and Data Disk names
 
 ## [1.1.1] - 2023-10-17
- 
+
 ### Added
- 
+
 ### Changed
- 
+
 ### Removed
 
- - removed ignore_changes for tags in the windows virtual machine resource
+- removed ignore_changes for tags in the windows virtual machine resource
 
 ### Fixed
 
- - you can now add tags also after initial deployment, they are not ignored anymore
+- you can now add tags also after initial deployment, they are not ignored anymore

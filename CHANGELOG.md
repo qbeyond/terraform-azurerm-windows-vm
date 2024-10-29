@@ -6,6 +6,13 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [5.0.1] - 2024-10-29
+
+Bugfix to make update management work again by default.
+
+### Changed
+- Set var.virtual_machine_config.bypass_platform_safety_checks_on_user_schedule_enabled to true
+
 ## [5.0.0] - 2024-08-30
 
 Added new features, variable change name and disk name validation.

@@ -74,7 +74,7 @@ variable "virtual_machine_config" {
     proximity_placement_group_id      = optional(string)
     patch_assessment_mode             = optional(string, "AutomaticByPlatform")
     patch_mode                        = optional(string, "AutomaticByPlatform")
-    bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, false)
+    bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
   })
   validation {
     condition     = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)

@@ -50,10 +50,16 @@ variable "additional_network_interface_ids" {
 variable "subnet" {
   type = object({
     id               = string
-    address_prefixes = list(string)
+    address_prefixes = optional(list(string), null)
   })
   nullable    = false
-  description = "The variable takes the subnet as input and takes the id and the address prefix for further configuration."
+  description = <<-DOC
+  ```
+    The variable takes the subnet as input and takes the id and the address prefix for further configuration.
+    Note: If no address prefix is provided, the information is being extracted from the id. This requires the
+    subnet to follow our naming convention.
+  ```
+  DOC
 }
 
 variable "virtual_machine_config" {

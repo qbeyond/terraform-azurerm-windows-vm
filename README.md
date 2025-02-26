@@ -57,6 +57,8 @@ resource "azurerm_subnet" "this" {
 ```hcl
 provider "azurerm" {
   features {}
+
+  skip_provider_registration = true
 }
 
 module "virtual_machine" {
@@ -68,7 +70,7 @@ module "virtual_machine" {
   nic_config = {
     private_ip                    = "10.0.0.16"
     dns_servers                   = ["10.0.0.10", "10.0.0.11"]
-    enable_accelerated_networking = true
+    enable_accelerated_networking = false
     nsg                           = azurerm_network_security_group.this
   }
   virtual_machine_config = {
@@ -210,7 +212,7 @@ resource "azurerm_network_security_group" "this" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >= 3.7.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 3.108.0 |
 
 ## Inputs
 

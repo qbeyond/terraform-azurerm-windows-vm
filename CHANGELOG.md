@@ -6,6 +6,10 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [5.0.3] - 2025-02-26
+
+Fixes too low version constraint due to parameter `accelerated_networking_enabled`.
+
 ## [5.0.2] - 2025-02-25
 
 Bugfix in type validation of `virtual_machine_config.zone`.

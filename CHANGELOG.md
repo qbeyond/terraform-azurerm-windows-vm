@@ -6,6 +6,10 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [5.0.4] - 2025-02-26
+
+Bugfix to allow azurerm to use minor version upgrades.
+
 ## [5.0.3] - 2025-02-26
 
 Fixes too low version constraint due to parameter `accelerated_networking_enabled`.

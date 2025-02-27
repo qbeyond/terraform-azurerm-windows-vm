@@ -6,6 +6,13 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [5.1.0] - 2025-02-27
+
+### Added
+
+- address prefixes will be extracted from the subnet id if not specified
+- validation of the subnet id to match naming convention if no address prefix is specified
+
 ## [5.0.4] - 2025-02-26
 
 Bugfix to allow azurerm to use minor version upgrades.

@@ -50,10 +50,19 @@ variable "additional_network_interface_ids" {
 variable "subnet" {
   type = object({
     id               = string
-    address_prefixes = list(string)
+    address_prefixes = optional(list(string), null)
   })
   nullable    = false
-  description = "The variable takes the subnet as input and takes the id and the address prefix for further configuration."
+  description = <<-DOC
+  ```
+    The variable takes the subnet as input and takes the id and the address prefix for further configuration.
+    Note: If no address prefix is provided, the information is being extracted from the id.
+  ```
+  DOC
+  validation {
+    condition = var.subnet.address_prefixes == null ? can(regex(".*subnets/snet-[0-9-]+-.*$", var.subnet.id)) : true
+    error_message = "If no address prefix is specified, the name of the subnet must match the naming convention."
+  }
 }
 
 variable "virtual_machine_config" {

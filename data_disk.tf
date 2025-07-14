@@ -3,7 +3,7 @@ resource "azurerm_managed_disk" "data_disk" {
   name                       = lookup(var.name_overrides.data_disks, each.key, "disk-${var.virtual_machine_config.hostname}-${each.key}")
   location                   = var.virtual_machine_config.location
   resource_group_name        = var.resource_group_name
-  zone                       = var.virtual_machine_config.zone
+  zone                       = local.zone
   storage_account_type       = each.value["storage_account_type"]
   create_option              = each.value["create_option"]
   source_resource_id         = each.value["source_resource_id"]

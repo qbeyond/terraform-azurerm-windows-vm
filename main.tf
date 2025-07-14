@@ -59,7 +59,7 @@ resource "azurerm_windows_virtual_machine" "this" {
   proximity_placement_group_id = var.virtual_machine_config.proximity_placement_group_id
   network_interface_ids        = concat([azurerm_network_interface.this.id], var.additional_network_interface_ids)
   availability_set_id          = var.virtual_machine_config.availability_set_id
-  zone                         = var.virtual_machine_config.zone
+  zone                         = local.zone
   tags                         = local.virtual_machine.tags
   timezone                     = var.virtual_machine_config.timezone
   patch_mode                   = var.virtual_machine_config.patch_mode

@@ -19,4 +19,8 @@ locals {
   }
   os_disk_name   = coalesce(var.name_overrides.os_disk, "disk-${var.virtual_machine_config.hostname}-Os")
   update_allowed = var.update_allowed ? "yes" : "no"
+
+  zone = (
+    length(var.data_disks) > 0 ? values(var.data_disks)[0].zone : null
+  )
 }

@@ -6,16 +6,14 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [5.2.0] - 2025-07-14
+## [5.1.1] - 2025-07-15
 
 ### Added
 
 - Support for PremiumV2_LRS storage account type (data disk)
-- New validations for the PremiumV2_LRS data disk, Availability Zones, Caching, On Demand Bursting Enabled & Write Accelerator Enable 
-
-### Changed
-
-- Move availability zones to data disk map
+- Validations for the PremiumV2_LRS data disk, Caching, On Demand Bursting Enabled, Write Accelerator Enable, Disks Iops & Disks Mbps, 
+- Variable "zones" & "sku" to the public_ip_config block with its validations
+- "os_publisher" & "os_offer" to the virtual_machine_config" block
 
 ## [5.1.0] - 2025-02-27
 

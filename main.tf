@@ -4,6 +4,8 @@ resource "azurerm_public_ip" "this" {
   resource_group_name = var.resource_group_name
   location            = var.virtual_machine_config.location
   allocation_method   = var.public_ip_config.allocation_method
+  zones               = var.public_ip_config.zones
+  sku                 = var.public_ip_config.sku
 
   tags = var.tags
 }
@@ -50,8 +52,8 @@ resource "azurerm_windows_virtual_machine" "this" {
   }
 
   source_image_reference {
-    publisher = "MicrosoftWindowsServer"
-    offer     = "WindowsServer"
+    publisher = var.virtual_machine_config.os_publisher
+    offer     = var.virtual_machine_config.os_offer
     sku       = var.virtual_machine_config.os_sku
     version   = var.virtual_machine_config.os_version
   }
@@ -59,7 +61,7 @@ resource "azurerm_windows_virtual_machine" "this" {
   proximity_placement_group_id = var.virtual_machine_config.proximity_placement_group_id
   network_interface_ids        = concat([azurerm_network_interface.this.id], var.additional_network_interface_ids)
   availability_set_id          = var.virtual_machine_config.availability_set_id
-  zone                         = local.zone
+  zone                         = var.virtual_machine_config.zone
   tags                         = local.virtual_machine.tags
   timezone                     = var.virtual_machine_config.timezone
   patch_mode                   = var.virtual_machine_config.patch_mode

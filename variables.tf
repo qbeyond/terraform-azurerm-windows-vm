@@ -2,6 +2,7 @@ variable "public_ip_config" {
   type = object({
     enabled           = bool
     allocation_method = optional(string, "Static")
+    sku               = optional(string, "Standard")
   })
   default = {
     enabled = false
@@ -10,10 +11,20 @@ variable "public_ip_config" {
     condition     = contains(["Static", "Dynamic"], var.public_ip_config.allocation_method)
     error_message = "Allocation method must be Static or Dynamic"
   }
+
+  validation {
+    condition = (
+      var.virtual_machine_config.zone == null || var.public_ip_config.sku == "Standard"
+    )
+    error_message = "If a zone is specified, the Public IP SKU must be set to 'Standard'."
+  }
+
   description = <<-DOC
   ```
     enabled: Optionally select true if a public ip should be created. Defaults to false.
-    allocation_method: The allocation method of the public ip that will be created. Defaults to static.      
+    allocation_method: The allocation method of the public ip that will be created. Defaults to static.  
+    zones: Optionally specify an availibility zone for the public ip. Defaults to null.    
+    sku: Optionally specify the sku of the public ip. Defaults to Standard.
   ```
   DOC
 }
@@ -67,24 +78,32 @@ variable "subnet" {
 
 variable "virtual_machine_config" {
   type = object({
-    hostname                          = string
-    size                              = string
-    location                          = string
-    os_sku                            = string
-    os_version                        = optional(string, "latest")
-    os_disk_caching                   = optional(string, "ReadWrite")
-    os_disk_storage_type              = optional(string, "StandardSSD_LRS")
-    os_disk_size_gb                   = optional(number)
-    os_disk_write_accelerator_enabled = optional(bool, false)
-    admin_username                    = optional(string, "loc_sysadmin")
-    timezone                          = optional(string, "UTC")
-    zone                              = optional(string)
-    availability_set_id               = optional(string)
-    proximity_placement_group_id      = optional(string)
-    patch_assessment_mode             = optional(string, "AutomaticByPlatform")
-    patch_mode                        = optional(string, "AutomaticByPlatform")
+    hostname                                               = string
+    size                                                   = string
+    location                                               = string
+    os_sku                                                 = string
+    os_publisher                                           = optional(string, "MicrosoftWindowsServer")
+    os_offer                                               = optional(string,"WindowsServer")
+    os_version                                             = optional(string, "latest")
+    os_disk_caching                                        = optional(string, "ReadWrite")
+    os_disk_storage_type                                   = optional(string, "StandardSSD_LRS")
+    os_disk_size_gb                                        = optional(number)
+    os_disk_write_accelerator_enabled                      = optional(bool, false)
+    admin_username                                         = optional(string, "loc_sysadmin")
+    zone                                                   = optional(string)
+    timezone                                               = optional(string, "UTC")
+    availability_set_id                                    = optional(string)
+    proximity_placement_group_id                           = optional(string)
+    patch_assessment_mode                                  = optional(string, "AutomaticByPlatform")
+    patch_mode                                             = optional(string, "AutomaticByPlatform")
     bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
+
+    additional_capabilities                                = optional(object({
+      ultra_ssd_enabled   = optional(bool, false)
+      hibernation_enabled = optional(bool, false)
+    }), {})
   })
+
   validation {
     condition     = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)
     error_message = "Possible values are None, ReadOnly and ReadWrite"
@@ -98,15 +117,25 @@ variable "virtual_machine_config" {
     error_message = "os_disk_write_accelerator_enabled, can only be activated on Premium disks and caching deactivated."
   }
   validation {
-    condition     = var.virtual_machine_config.zone == null || var.virtual_machine_config.zone == "1" || var.virtual_machine_config.zone == "2" || var.virtual_machine_config.zone == "3"
-    error_message = "Zone, can only be empty, 1, 2 or 3."
+    condition = alltrue([
+      var.virtual_machine_config.zone == null ? true : contains(["1", "2", "3"], var.virtual_machine_config.zone)
+    ])
+    error_message = "Zone must be null or one of '1', '2', or '3'."
   }
+
+  validation {
+    condition     = var.virtual_machine_config.zone != null ? var.virtual_machine_config.availability_set_id == null : true
+    error_message = "Either 'zone' or 'availability_set_id' can be set, but not both."
+  }
+
   description = <<-DOC
   ```
     hostname: Name of the host system.
     size: The size of the vm. Possible values can be seen here: https://learn.microsoft.com/en-us/azure/virtual-machines/sizes
     location: The location of the virtual machine.
     os_sku: The os that will be running on the vm.
+    os_publisher: Optionally specify the os publisher. Defaults to MicrosoftWindowsServer.
+    os_offer: Optionally specify the os offer. Defaults to WindowsServer.
     os_version: Optionally specify an os version for the chosen sku. Defaults to latest.
     os_disk_caching: Optionally change the caching option of the os disk. Defaults to ReadWrite.
     os_disk_storage_type: Optionally change the os_disk_storage_type. Defaults to StandardSSD_LRS.
@@ -115,15 +144,18 @@ variable "virtual_machine_config" {
       The local admin name could be changed by the gpo in the target ad.
     os_disk_write_accelerator_enabled: Optionally activate write accelaration for the os disk. Can only
       be activated on Premium_LRS disks and caching deactivated. Defaults to false.
+    zone: Optionally specify an availibility zone for the vm, data_disks and nic.
     timezone: Optionally change the timezone of the VM. Defaults to UTC.
       (More timezone names: https://jackstromberg.com/2017/01/list-of-time-zones-consumed-by-azure/).
-    zone: Optionally specify an availibility zone for the vm.
     availability_set_id: Optionally specify an availibilty set for the vm.
     proximity_placement_group_id: (Optional) The ID of the Proximity Placement Group which the Virtual Machine should be assigned to.
     patch_assessment_mode: Specifies the mode of VM Guest Patching for the Virtual Machine.
     patch_mode:  Specifies the mode of in-guest patching to this Windows Virtual Machine.
     bypass_platform_safety_checks_on_user_schedule_enabled: This setting ensures that machines are patched by using your configured schedules and not autopatched.
        Can only be set to true when patch_mode is set to AutomaticByPlatform.
+    additional_capabilities: (Optional) Additional capabilities for the virtual machine.
+      ultra_ssd_enabled: (Optional) Enable UltraSSD_LRS for the virtual machine. Defaults to false.
+      hibernation_enabled: (Optional) Enable hibernation for the virtual machine. Defaults to false.       
   ```
   DOC
 }
@@ -156,18 +188,32 @@ variable "data_disks" {
     storage_account_type       = optional(string, "StandardSSD_LRS")
     write_accelerator_enabled  = optional(bool, false)
     on_demand_bursting_enabled = optional(bool, false)
+    disk_iops_read_write       = optional(number)
+    disk_mbps_read_write       = optional(number)
+    disk_iops_read_only        = optional(number)
+    disk_mbps_read_only        = optional(number)
+    max_shares                 = optional(number)
   }))
   validation {
     condition     = length([for v in var.data_disks : v.lun]) == length(distinct([for v in var.data_disks : v.lun]))
     error_message = "One or more of the lun parameters in the map are duplicates."
   }
   validation {
-    condition     = alltrue([for o in var.data_disks : contains(["Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "StandardSSD_ZRS", "Premium_ZRS"], o.storage_account_type)])
-    error_message = "Possible values are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS for storage_account_type"
+    condition     = alltrue([for o in var.data_disks : contains(["Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "StandardSSD_ZRS", "Premium_ZRS", "PremiumV2_LRS", "UltraSSD_LRS"], o.storage_account_type)])
+    error_message = "Possible values are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS, Premium_ZRS PremiumV2_LRS and UltraSSD_LRS for storage_account_type"
   }
   validation {
-    condition = alltrue([for o in var.data_disks : (
-      (o.write_accelerator_enabled == true && contains(["Premium_LRS", "Premium_ZRS"], o.storage_account_type) && contains(["None", "ReadOnly"], o.caching)) ||
+    condition = alltrue([
+      for disk in var.data_disks : (
+        disk.on_demand_bursting_enabled == false ||
+        disk.disk_size_gb > 512
+      )
+    ])
+    error_message = "on_demand_bursting_enabled` can only be set to true when `disk_size_gb` is larger than 512GB."
+  }
+  validation {
+    condition = alltrue([for o in var.data_disks: (
+      (o.write_accelerator_enabled == true && contains(["Premium_LRS", "Premium_ZRS"], o.storage_account_type) && contains(["None"], o.caching)) ||
       (o.write_accelerator_enabled == false)
     )])
     error_message = "write_accelerator_enabled, can only be activated on Premium disks and caching deactivated."
@@ -177,7 +223,35 @@ variable "data_disks" {
       (o.on_demand_bursting_enabled == true && contains(["Premium_LRS", "Premium_ZRS"], o.storage_account_type)) ||
       (o.on_demand_bursting_enabled == false)
     )])
-    error_message = "If enable on demand bursting, possible storage_account_type values are Premium_LRS and Premium_ZRS."
+    error_message = "If enable on demand bursting, possible storage_account_type values are Premium_LRS, Premium_ZRS"
+  }
+  validation {
+    condition = alltrue([
+      for v in var.data_disks :
+      (
+        (v.storage_account_type != "PremiumV2_LRS") || 
+        (var.virtual_machine_config.zone != null)
+      )
+    ])
+    error_message = "PremiumV2_LRS storage_account_type requires zone to be set. Please set zone to 1, 2 or 3."
+  }
+  validation {
+    condition = (
+      length(distinct([
+        for v in var.data_disks : var.virtual_machine_config.zone
+      ])) <= 1
+    )
+    error_message = "All disks must be in the same zone or zone must be empty."
+  }
+  validation {
+    condition = alltrue([
+      for v in var.data_disks :
+      (
+        !(v.storage_account_type == "PremiumV2_LRS" || v.storage_account_type == "UltraSSD_LRS") ||
+        (v.caching == "None")
+      )
+    ])
+    error_message = "When storage_account_type is 'PremiumV2_LRS' or 'UltraSSD_LRS', caching must be set to 'None'."
   }
   validation {
     condition     = alltrue([for k, v in var.data_disks : !strcontains(k, "-")])
@@ -189,11 +263,82 @@ variable "data_disks" {
     )])
     error_message = "When a data disk source resource ID is specified then create option must be either 'Copy' or 'Restore'."
   }
+
+  validation {
+    condition = alltrue([
+      for o in var.data_disks : (
+        (
+          o.disk_iops_read_write == null &&
+          o.disk_mbps_read_write == null &&
+          o.disk_iops_read_only == null &&
+          o.disk_mbps_read_only == null
+        ) || (
+          contains(["UltraSSD_LRS", "PremiumV2_LRS"], o.storage_account_type)
+        )
+      )
+    ])
+    error_message = "disk_iops_read_write, disk_mbps_read_write, disk_iops_read_only and disk_mbps_read_only can only be set for UltraSSD_LRS or PremiumV2_LRS storage account types."
+  }
+
+  validation {
+    condition = alltrue([
+      for o in var.data_disks : (
+        (
+          o.disk_iops_read_only == null && o.disk_mbps_read_only == null
+        ) || (
+          contains(["UltraSSD_LRS", "PremiumV2_LRS"], o.storage_account_type) &&
+          o.max_shares != null &&
+          o.max_shares > 1 &&
+          o.max_shares <= 10
+        )
+      )
+    ])
+    error_message = "disk_iops_read_only and disk_mbps_read_only can only be set for UltraSSD_LRS or PremiumV2_LRS disks with shared disk enabled (max_shares between 2 and 10)."
+  }
+
+  validation {
+    condition = alltrue([
+      for o in var.data_disks :
+      o.storage_account_type == "UltraSSD_LRS" ? var.virtual_machine_config.availability_set_id == null : true
+    ])
+    error_message = "UltraSSD_LRS is not supported when 'availability_set_id' is set."
+  }
+  validation {
+    condition = alltrue([
+      for o in var.data_disks : (
+        (o.disk_iops_read_write == null ? true : (o.disk_iops_read_write >= 3000 && o.disk_iops_read_write <= 64000)) &&
+        (o.disk_iops_read_only  == null ? true : (o.disk_iops_read_only  >= 3000 && o.disk_iops_read_only  <= 64000))
+      )
+    ])
+    error_message = "disk_iops_read_write and disk_iops_read_only must be between 3000 and 64000 if set."
+  }
+
+  validation {
+    condition = alltrue([
+      for o in var.data_disks : (
+        (o.disk_mbps_read_write == null ? true : (o.disk_mbps_read_write >= 125 && o.disk_mbps_read_write <= 750)) &&
+        (o.disk_mbps_read_only  == null ? true : (o.disk_mbps_read_only  >= 125 && o.disk_mbps_read_only  <= 750))
+      )
+    ])
+    error_message = "disk_mbps_read_write and disk_mbps_read_only must be between 125 and 1000 if set."
+  }
+
+  validation {
+    condition = alltrue([
+      for v in var.data_disks :
+      (
+        v.storage_account_type != "UltraSSD_LRS" ? true :
+        try(var.virtual_machine_config.additional_capabilities.ultra_ssd_enabled, false)
+      )
+    ])
+    error_message = "If UltraSSD_LRS is used in data_disks, ultra_ssd_enabled must be set to true in additional_capabilities."
+  }
+
   default     = {}
   nullable    = false
   description = <<-DOC
   ```
-   <logical name of the data disk> = {
+   `<logical name of the data disk>` = {
     lun: Number of the lun.
     disk_size_gb: The size of the data disk.
     storage_account_type: Optionally change the storage_account_type. Defaults to StandardSSD_LRS.
@@ -204,6 +349,11 @@ variable "data_disks" {
     write_accelerator_enabled: Optionally activate write accelaration for the data disk. Can only
       be activated on Premium disks and caching deactivated. Defaults to false.
     on_demand_bursting_enabled: Optionally activate disk bursting. Only for Premium disk with size to 512 Gb up. Default false.
+    disk_iops_read_write: (Optional) The maximum number of IOPS allowed for the disk in read/write operations.
+    disk_mbps_read_write: (Optional) The maximum number of MBps allowed for the disk in read/write operations.
+    disk_iops_read_only: (Optional) The maximum number of IOPS allowed for the disk in read-only operations.
+    disk_mbps_read_only: (Optional) The maximum number of MBps allowed for the disk in read-only operations.
+    max_shares: (Optional) The maximum number of VMs that can share this disk. Only for UltraSSD_LRS and PremiumV2_LRS disks.
    }
   ```
   DOC

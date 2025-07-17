@@ -4,6 +4,8 @@ resource "azurerm_public_ip" "this" {
   resource_group_name = var.resource_group_name
   location            = var.virtual_machine_config.location
   allocation_method   = var.public_ip_config.allocation_method
+  zones               = [var.virtual_machine_config.zone]
+  sku                 = var.public_ip_config.sku
 
   tags = var.tags
 }
@@ -50,8 +52,8 @@ resource "azurerm_windows_virtual_machine" "this" {
   }
 
   source_image_reference {
-    publisher = "MicrosoftWindowsServer"
-    offer     = "WindowsServer"
+    publisher = var.virtual_machine_config.os_publisher
+    offer     = var.virtual_machine_config.os_offer
     sku       = var.virtual_machine_config.os_sku
     version   = var.virtual_machine_config.os_version
   }
@@ -65,6 +67,11 @@ resource "azurerm_windows_virtual_machine" "this" {
   patch_mode                   = var.virtual_machine_config.patch_mode
   patch_assessment_mode        = var.virtual_machine_config.patch_assessment_mode
   bypass_platform_safety_checks_on_user_schedule_enabled = var.virtual_machine_config.bypass_platform_safety_checks_on_user_schedule_enabled
+
+  additional_capabilities {
+    ultra_ssd_enabled   = var.virtual_machine_config.additional_capabilities.ultra_ssd_enabled
+    hibernation_enabled = var.virtual_machine_config.additional_capabilities.hibernation_enabled
+  }
 
   lifecycle {
     prevent_destroy = true

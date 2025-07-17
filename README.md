@@ -20,7 +20,7 @@ provider "azurerm" {
 module "virtual_machine" {
   source = "../.."
   virtual_machine_config = {
-    hostname             = "CUSTAPP001XXXXXXXXXXXXXXXXXXXXXXXXXX"
+    hostname             = "CUSTAPP001"
     location             = local.location
     admin_username       = "local_admin"
     size                 = "Standard_B1s"

@@ -2,7 +2,6 @@ variable "public_ip_config" {
   type = object({
     enabled           = bool
     allocation_method = optional(string, "Static")
-    zones             = optional(list(string))
     sku               = optional(string, "Standard")
   })
   default = {
@@ -12,30 +11,12 @@ variable "public_ip_config" {
     condition     = contains(["Static", "Dynamic"], var.public_ip_config.allocation_method)
     error_message = "Allocation method must be Static or Dynamic"
   }
-  validation {
-    condition = alltrue([
-      var.public_ip_config.zones == null ? true : alltrue([
-        for z in var.public_ip_config.zones : contains(["1", "2", "3"], z)
-      ])
-    ])
-    error_message = "Zones must be null or a list containing only '1', '2', or '3'."
-  }
-  validation {
-    condition = alltrue([
-      (
-        var.public_ip_config.zones == null || var.virtual_machine_config.zone == null
-      ) ? true : contains(var.public_ip_config.zones, var.virtual_machine_config.zone)
-    ])
-    error_message = "At least one of the public_ip_config.zones must match virtual_machine_config.zone when both are set."
-  }
 
   validation {
-    condition = alltrue([
-      var.public_ip_config.zones == null ? true : (
-        var.public_ip_config.sku == "Standard"
-      )
-    ])
-    error_message = "If zones are specified, sku must be 'Standard'."
+    condition = (
+      var.virtual_machine_config.zone == null || var.public_ip_config.sku == "Standard"
+    )
+    error_message = "If a zone is specified, the Public IP SKU must be set to 'Standard'."
   }
 
   description = <<-DOC
@@ -116,7 +97,13 @@ variable "virtual_machine_config" {
     patch_assessment_mode                                  = optional(string, "AutomaticByPlatform")
     patch_mode                                             = optional(string, "AutomaticByPlatform")
     bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
+
+    additional_capabilities                                = optional(object({
+      ultra_ssd_enabled   = optional(bool, false)
+      hibernation_enabled = optional(bool, false)
+    }), {})
   })
+
   validation {
     condition     = contains(["None", "ReadOnly", "ReadWrite"], var.virtual_machine_config.os_disk_caching)
     error_message = "Possible values are None, ReadOnly and ReadWrite"
@@ -134,6 +121,11 @@ variable "virtual_machine_config" {
       var.virtual_machine_config.zone == null ? true : contains(["1", "2", "3"], var.virtual_machine_config.zone)
     ])
     error_message = "Zone must be null or one of '1', '2', or '3'."
+  }
+
+  validation {
+    condition     = var.virtual_machine_config.zone != null ? var.virtual_machine_config.availability_set_id == null : true
+    error_message = "Either 'zone' or 'availability_set_id' can be set, but not both."
   }
 
   description = <<-DOC
@@ -161,6 +153,9 @@ variable "virtual_machine_config" {
     patch_mode:  Specifies the mode of in-guest patching to this Windows Virtual Machine.
     bypass_platform_safety_checks_on_user_schedule_enabled: This setting ensures that machines are patched by using your configured schedules and not autopatched.
        Can only be set to true when patch_mode is set to AutomaticByPlatform.
+    additional_capabilities: (Optional) Additional capabilities for the virtual machine.
+      ultra_ssd_enabled: (Optional) Enable UltraSSD_LRS for the virtual machine. Defaults to false.
+      hibernation_enabled: (Optional) Enable hibernation for the virtual machine. Defaults to false.       
   ```
   DOC
 }
@@ -204,8 +199,8 @@ variable "data_disks" {
     error_message = "One or more of the lun parameters in the map are duplicates."
   }
   validation {
-    condition     = alltrue([for o in var.data_disks : contains(["Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "StandardSSD_ZRS", "Premium_ZRS", "PremiumV2_LRS"], o.storage_account_type)])
-    error_message = "Possible values are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS, Premium_ZRS and PremiumV2_LRS for storage_account_type"
+    condition     = alltrue([for o in var.data_disks : contains(["Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "StandardSSD_ZRS", "Premium_ZRS", "PremiumV2_LRS", "UltraSSD_LRS"], o.storage_account_type)])
+    error_message = "Possible values are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS, Premium_ZRS PremiumV2_LRS and UltraSSD_LRS for storage_account_type"
   }
   validation {
     condition = alltrue([
@@ -252,11 +247,11 @@ variable "data_disks" {
     condition = alltrue([
       for v in var.data_disks :
       (
-        (v.storage_account_type != "PremiumV2_LRS") ||
+        !(v.storage_account_type == "PremiumV2_LRS" || v.storage_account_type == "UltraSSD_LRS") ||
         (v.caching == "None")
       )
     ])
-    error_message = "When storage_account_type is 'PremiumV2_LRS', caching must be set to 'None'."
+    error_message = "When storage_account_type is 'PremiumV2_LRS' or 'UltraSSD_LRS', caching must be set to 'None'."
   }
   validation {
     condition     = alltrue([for k, v in var.data_disks : !strcontains(k, "-")])
@@ -303,6 +298,13 @@ variable "data_disks" {
 
   validation {
     condition = alltrue([
+      for o in var.data_disks :
+      o.storage_account_type == "UltraSSD_LRS" ? var.virtual_machine_config.availability_set_id == null : true
+    ])
+    error_message = "UltraSSD_LRS is not supported when 'availability_set_id' is set."
+  }
+  validation {
+    condition = alltrue([
       for o in var.data_disks : (
         (o.disk_iops_read_write == null ? true : (o.disk_iops_read_write >= 3000 && o.disk_iops_read_write <= 64000)) &&
         (o.disk_iops_read_only  == null ? true : (o.disk_iops_read_only  >= 3000 && o.disk_iops_read_only  <= 64000))
@@ -319,6 +321,17 @@ variable "data_disks" {
       )
     ])
     error_message = "disk_mbps_read_write and disk_mbps_read_only must be between 125 and 1000 if set."
+  }
+
+  validation {
+    condition = alltrue([
+      for v in var.data_disks :
+      (
+        v.storage_account_type != "UltraSSD_LRS" ? true :
+        try(var.virtual_machine_config.additional_capabilities.ultra_ssd_enabled, false)
+      )
+    ])
+    error_message = "If UltraSSD_LRS is used in data_disks, ultra_ssd_enabled must be set to true in additional_capabilities."
   }
 
   default     = {}

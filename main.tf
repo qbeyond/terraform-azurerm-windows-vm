@@ -58,14 +58,14 @@ resource "azurerm_windows_virtual_machine" "this" {
     version   = var.virtual_machine_config.os_version
   }
 
-  proximity_placement_group_id = var.virtual_machine_config.proximity_placement_group_id
-  network_interface_ids        = concat([azurerm_network_interface.this.id], var.additional_network_interface_ids)
-  availability_set_id          = var.virtual_machine_config.availability_set_id
-  zone                         = var.virtual_machine_config.zone
-  tags                         = local.virtual_machine.tags
-  timezone                     = var.virtual_machine_config.timezone
-  patch_mode                   = var.virtual_machine_config.patch_mode
-  patch_assessment_mode        = var.virtual_machine_config.patch_assessment_mode
+  proximity_placement_group_id                           = var.virtual_machine_config.proximity_placement_group_id
+  network_interface_ids                                  = concat([azurerm_network_interface.this.id], var.additional_network_interface_ids)
+  availability_set_id                                    = var.virtual_machine_config.availability_set_id
+  zone                                                   = var.virtual_machine_config.zone
+  tags                                                   = local.virtual_machine.tags
+  timezone                                               = var.virtual_machine_config.timezone
+  patch_mode                                             = var.virtual_machine_config.patch_mode
+  patch_assessment_mode                                  = var.virtual_machine_config.patch_assessment_mode
   bypass_platform_safety_checks_on_user_schedule_enabled = var.virtual_machine_config.bypass_platform_safety_checks_on_user_schedule_enabled
 
   additional_capabilities {
@@ -73,10 +73,24 @@ resource "azurerm_windows_virtual_machine" "this" {
     hibernation_enabled = var.virtual_machine_config.additional_capabilities.hibernation_enabled
   }
 
+
   lifecycle {
     prevent_destroy = true
     ignore_changes = [
       identity
     ]
   }
+}
+
+resource "azurerm_virtual_machine_extension" "disk_encryption" {
+  count = var.disk_encryption != null ? 1 : 0
+
+  name                       = "${var.virtual_machine_config.hostname}-diskEncryption"
+  virtual_machine_id         = azurerm_windows_virtual_machine.this.id
+  publisher                  = var.disk_encryption.publisher
+  type                       = var.disk_encryption.type
+  type_handler_version       = var.disk_encryption.type_handler_version
+  auto_upgrade_minor_version = var.disk_encryption.auto_upgrade_minor_version
+
+  settings = jsonencode(var.disk_encryption.settings)
 }

@@ -71,7 +71,7 @@ variable "subnet" {
   ```
   DOC
   validation {
-    condition = var.subnet.address_prefixes == null ? can(regex(".*subnets/snet-[0-9-]+-.*$", var.subnet.id)) : true
+    condition     = var.subnet.address_prefixes == null ? can(regex(".*subnets/snet-[0-9-]+-.*$", var.subnet.id)) : true
     error_message = "If no address prefix is specified, the name of the subnet must match the naming convention."
   }
 }
@@ -83,7 +83,7 @@ variable "virtual_machine_config" {
     location                                               = string
     os_sku                                                 = string
     os_publisher                                           = optional(string, "MicrosoftWindowsServer")
-    os_offer                                               = optional(string,"WindowsServer")
+    os_offer                                               = optional(string, "WindowsServer")
     os_version                                             = optional(string, "latest")
     os_disk_caching                                        = optional(string, "ReadWrite")
     os_disk_storage_type                                   = optional(string, "StandardSSD_LRS")
@@ -98,7 +98,7 @@ variable "virtual_machine_config" {
     patch_mode                                             = optional(string, "AutomaticByPlatform")
     bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
 
-    additional_capabilities                                = optional(object({
+    additional_capabilities = optional(object({
       ultra_ssd_enabled   = optional(bool, false)
       hibernation_enabled = optional(bool, false)
     }), {})
@@ -113,7 +113,7 @@ variable "virtual_machine_config" {
     error_message = "Possible values are Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS"
   }
   validation {
-    condition     = (contains(["Premium_LRS", "Premium_ZRS"], var.virtual_machine_config.os_disk_storage_type) && var.virtual_machine_config.os_disk_write_accelerator_enabled == true  && var.virtual_machine_config.os_disk_caching == "None") || (var.virtual_machine_config.os_disk_write_accelerator_enabled == false)
+    condition     = (contains(["Premium_LRS", "Premium_ZRS"], var.virtual_machine_config.os_disk_storage_type) && var.virtual_machine_config.os_disk_write_accelerator_enabled == true && var.virtual_machine_config.os_disk_caching == "None") || (var.virtual_machine_config.os_disk_write_accelerator_enabled == false)
     error_message = "os_disk_write_accelerator_enabled, can only be activated on Premium disks and caching deactivated."
   }
   validation {
@@ -212,7 +212,7 @@ variable "data_disks" {
     error_message = "on_demand_bursting_enabled` can only be set to true when `disk_size_gb` is larger than 512GB."
   }
   validation {
-    condition = alltrue([for o in var.data_disks: (
+    condition = alltrue([for o in var.data_disks : (
       (o.write_accelerator_enabled == true && contains(["Premium_LRS", "Premium_ZRS"], o.storage_account_type) && contains(["None"], o.caching)) ||
       (o.write_accelerator_enabled == false)
     )])
@@ -229,7 +229,7 @@ variable "data_disks" {
     condition = alltrue([
       for v in var.data_disks :
       (
-        (v.storage_account_type != "PremiumV2_LRS") || 
+        (v.storage_account_type != "PremiumV2_LRS") ||
         (var.virtual_machine_config.zone != null)
       )
     ])
@@ -258,7 +258,7 @@ variable "data_disks" {
     error_message = "Logical Name can't contain a '-'"
   }
   validation {
-    condition     = alltrue([for o in var.data_disks : (
+    condition = alltrue([for o in var.data_disks : (
       (o.source_resource_id != null && contains(["Copy", "Restore"], o.create_option) || (o.create_option == "Empty" && o.source_resource_id == null))
     )])
     error_message = "When a data disk source resource ID is specified then create option must be either 'Copy' or 'Restore'."
@@ -272,7 +272,7 @@ variable "data_disks" {
           o.disk_mbps_read_write == null &&
           o.disk_iops_read_only == null &&
           o.disk_mbps_read_only == null
-        ) || (
+          ) || (
           contains(["UltraSSD_LRS", "PremiumV2_LRS"], o.storage_account_type)
         )
       )
@@ -285,7 +285,7 @@ variable "data_disks" {
       for o in var.data_disks : (
         (
           o.disk_iops_read_only == null && o.disk_mbps_read_only == null
-        ) || (
+          ) || (
           contains(["UltraSSD_LRS", "PremiumV2_LRS"], o.storage_account_type) &&
           o.max_shares != null &&
           o.max_shares > 1 &&
@@ -307,7 +307,7 @@ variable "data_disks" {
     condition = alltrue([
       for o in var.data_disks : (
         (o.disk_iops_read_write == null ? true : (o.disk_iops_read_write >= 3000 && o.disk_iops_read_write <= 64000)) &&
-        (o.disk_iops_read_only  == null ? true : (o.disk_iops_read_only  >= 3000 && o.disk_iops_read_only  <= 64000))
+        (o.disk_iops_read_only == null ? true : (o.disk_iops_read_only >= 3000 && o.disk_iops_read_only <= 64000))
       )
     ])
     error_message = "disk_iops_read_write and disk_iops_read_only must be between 3000 and 64000 if set."
@@ -317,7 +317,7 @@ variable "data_disks" {
     condition = alltrue([
       for o in var.data_disks : (
         (o.disk_mbps_read_write == null ? true : (o.disk_mbps_read_write >= 125 && o.disk_mbps_read_write <= 750)) &&
-        (o.disk_mbps_read_only  == null ? true : (o.disk_mbps_read_only  >= 125 && o.disk_mbps_read_only  <= 750))
+        (o.disk_mbps_read_only == null ? true : (o.disk_mbps_read_only >= 125 && o.disk_mbps_read_only <= 750))
       )
     ])
     error_message = "disk_mbps_read_write and disk_mbps_read_only must be between 125 and 1000 if set."
@@ -381,6 +381,28 @@ variable "tags" {
   type        = map(string)
   description = "A mapping of tags to add to the resources created in this module"
   default     = {}
+}
+
+
+variable "disk_encryption" {
+  description = "Configuration for Azure Disk Encryption extension. When null, no ADE extension is created."
+  type = object({
+    publisher                  = optional(string, "Microsoft.Azure.Security")
+    type                       = optional(string, "AzureDiskEncryption")
+    type_handler_version       = optional(string, "2.2")
+    auto_upgrade_minor_version = optional(bool, true)
+    settings = object({
+      EncryptionOperation    = optional(string, "EnableEncryption")
+      KeyEncryptionAlgorithm = optional(string, "RSA-OAEP")
+      KeyVaultURL            = string
+      KeyVaultResourceId     = string
+      KeyEncryptionKeyURL    = string
+
+      SequenceVersion = optional(string)
+      VolumeType      = optional(string, "All")
+    })
+  })
+  default = null
 }
 
 

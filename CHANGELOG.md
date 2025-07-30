@@ -12,7 +12,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 - Support for PremiumV2_LRS & UltraSSD_LRS storage account type (data disk).
 - Validations for the PremiumV2_LRS & UltraSSD_LRS data disks, Caching, On Demand Bursting Enabled, Write Acceleration, Disks Iops & Disks Mbps.
-- Variable "zones" & "sku" to the public_ip_config block with its validations.
+- Variables "zones" & "sku" to the public_ip_config block with its validations.
 - "os_publisher", "os_offer" & "additional_capabilities" to the virtual_machine_config" block.
 
 ### Changed

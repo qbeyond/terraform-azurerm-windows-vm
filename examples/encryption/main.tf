@@ -61,7 +61,7 @@ resource "azurerm_key_vault_key" "this" {
   name         = local.key_name
   key_vault_id = azurerm_key_vault.this.id
   key_type     = "RSA"
-  key_size     = 2048
+  key_size     = 4096
   key_opts     = ["encrypt", "decrypt", "sign", "verify", "wrapKey", "unwrapKey"]
 
   depends_on = [azurerm_role_assignment.cryptouser]

@@ -406,3 +406,18 @@ variable "disk_encryption" {
 }
 
 
+variable "identity" {
+  description = "Configuration for VM Managed Identity. If encryption is enabled, SystemAssigned will be enforced."
+  type = object({
+    type                       = optional(string, "None")
+    user_assigned_identity_ids = optional(list(string), [])
+  })
+  validation {
+    condition     = contains(["None", "SystemAssigned", "UserAssigned"], var.identity.type)
+    error_message = "identity.type must be one of: None, SystemAssigned, UserAssigned."
+  }
+  default = {
+    type                       = "None"
+    user_assigned_identity_ids = []
+  }
+}

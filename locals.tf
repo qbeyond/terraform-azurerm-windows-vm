@@ -4,8 +4,8 @@ locals {
   }
 
   subnet_prefix = (var.subnet.address_prefixes == null
-    ? regex(".*subnets/snet-([0-9-]+)-.*$", var.subnet.id)[0]    # Parse from subnet id if not provided
-    : replace(var.subnet.address_prefixes[0], "/[./]/", "-")     # Replace '.' and '/' with '-' from prefix
+    ? regex(".*subnets/snet-([0-9-]+)-.*$", var.subnet.id)[0] # Parse from subnet id if not provided
+    : replace(var.subnet.address_prefixes[0], "/[./]/", "-")  # Replace '.' and '/' with '-' from prefix
   )
 
   nic = {
@@ -19,4 +19,7 @@ locals {
   }
   os_disk_name   = coalesce(var.name_overrides.os_disk, "disk-${var.virtual_machine_config.hostname}-Os")
   update_allowed = var.update_allowed ? "yes" : "no"
+
+  effective_identity_type = var.disk_encryption != null ? "SystemAssigned" : var.identity.type
+  effective_identity_ids  = var.disk_encryption != null ? [] : var.identity.user_assigned_identity_ids
 }

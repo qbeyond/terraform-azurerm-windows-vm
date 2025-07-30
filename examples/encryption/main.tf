@@ -4,6 +4,24 @@ provider "azurerm" {
 
 data "azurerm_client_config" "current" {}
 
+output "test" {
+  value = data.azurerm_client_config.current
+}
+
+output "vault_id" {
+  value = azurerm_key_vault.this.id
+}
+
+output "vault_uri" {
+  value = azurerm_key_vault.this.vault_uri
+}
+
+resource "azurerm_role_assignment" "cryptouser" {
+  scope                = azurerm_key_vault.this.id
+  role_definition_name = "Key Vault Crypto Officer"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
 resource "azurerm_resource_group" "this" {
   name     = local.resource_group_name
   location = local.location
@@ -24,18 +42,19 @@ resource "azurerm_subnet" "this" {
 }
 
 resource "azurerm_key_vault" "this" {
-  name                       = local.key_vault_name
-  location                   = azurerm_resource_group.this.location
-  resource_group_name        = azurerm_resource_group.this.name
-  tenant_id                  = data.azurerm_client_config.current.tenant_id
-  sku_name                   = "standard"
-  enable_rbac_authorization  = true
-  soft_delete_retention_days = 7
-  purge_protection_enabled   = false
+  name                        = local.key_vault_name
+  resource_group_name         = azurerm_resource_group.this.name
+  location                    = azurerm_resource_group.this.location
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  sku_name                    = "standard"
+  enable_rbac_authorization   = true
+  purge_protection_enabled    = false
+  enabled_for_disk_encryption = true
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
-
-
-
 
 
 resource "azurerm_key_vault_key" "this" {
@@ -44,6 +63,8 @@ resource "azurerm_key_vault_key" "this" {
   key_type     = "RSA"
   key_size     = 2048
   key_opts     = ["encrypt", "decrypt", "sign", "verify", "wrapKey", "unwrapKey"]
+
+  depends_on = [azurerm_role_assignment.cryptouser]
 }
 
 module "virtual_machine" {
@@ -70,9 +91,15 @@ module "virtual_machine" {
       KeyEncryptionAlgorithm = "RSA-OAEP-256"
       KeyVaultURL            = azurerm_key_vault.this.vault_uri
       KeyVaultResourceId     = azurerm_key_vault.this.id
-      KeyEncryptionKeyURL    = azurerm_key_vault_key.this.id
+      KekVaultResourceId     = azurerm_key_vault.this.id
+      KeyEncryptionKeyURL    = "${azurerm_key_vault.this.vault_uri}keys/${azurerm_key_vault_key.this.name}/${azurerm_key_vault_key.this.version}"
       VolumeType             = "All"
     }
   }
+  depends_on = [
+    azurerm_role_assignment.cryptouser,
+    azurerm_key_vault.this,
+    azurerm_key_vault_key.this
+  ]
 }
 

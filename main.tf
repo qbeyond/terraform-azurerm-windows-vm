@@ -44,21 +44,11 @@ resource "azurerm_windows_virtual_machine" "this" {
   admin_username      = var.virtual_machine_config.admin_username
   admin_password      = var.admin_password
 
-  dynamic "identity" {
-    for_each = local.effective_identity_type != "None" ? [1] : []
-    content {
-      type         = local.effective_identity_type
-      identity_ids = local.effective_identity_type == "UserAssigned" ? local.effective_identity_ids : []
-
-    }
-  }
-
   os_disk {
-    name                   = local.os_disk_name
-    caching                = var.virtual_machine_config.os_disk_caching
-    storage_account_type   = var.virtual_machine_config.os_disk_storage_type
-    disk_size_gb           = var.virtual_machine_config.os_disk_size_gb
-    disk_encryption_set_id = var.disk_encryption != null ? azurerm_disk_encryption_set.this[0].id : null
+    name                 = local.os_disk_name
+    caching              = var.virtual_machine_config.os_disk_caching
+    storage_account_type = var.virtual_machine_config.os_disk_storage_type
+    disk_size_gb         = var.virtual_machine_config.os_disk_size_gb
   }
 
   source_image_reference {
@@ -92,32 +82,14 @@ resource "azurerm_windows_virtual_machine" "this" {
   }
 }
 
-resource "azurerm_disk_encryption_set" "this" {
-  count               = var.disk_encryption != null ? 1 : 0
-  name                = "${local.virtual_machine.name}-des"
-  resource_group_name = var.resource_group_name
-  location            = var.virtual_machine_config.location
-  key_vault_key_id    = var.disk_encryption.settings.KeyEncryptionKeyURL
-
-  identity {
-    type = "SystemAssigned"
-  }
-}
-
-resource "azurerm_role_assignment" "des_crypto_user" {
+resource "azurerm_virtual_machine_extension" "disk_encryption" {
   count = var.disk_encryption != null ? 1 : 0
-  scope = var.disk_encryption.settings.KeyVaultResourceId
 
-  role_definition_name = "Key Vault Crypto User"
-  principal_id         = azurerm_disk_encryption_set.this[0].identity[0].principal_id
+  name                 = "${var.virtual_machine_config.hostname}-diskEncryption"
+  virtual_machine_id   = azurerm_windows_virtual_machine.this.id
+  publisher            = var.disk_encryption.publisher
+  type                 = var.disk_encryption.type
+  type_handler_version = var.disk_encryption.type_handler_version
 
-}
-
-resource "azurerm_role_assignment" "des_service_encryption_user" {
-  count = var.disk_encryption != null ? 1 : 0
-  scope = var.disk_encryption.settings.KeyVaultResourceId
-
-  role_definition_name = "Key Vault Crypto Service Encryption User"
-  principal_id         = azurerm_disk_encryption_set.this[0].identity[0].principal_id
-
+  settings = jsonencode(var.disk_encryption.settings)
 }

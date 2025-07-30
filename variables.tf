@@ -387,37 +387,20 @@ variable "tags" {
 variable "disk_encryption" {
   description = "Configuration for Azure Disk Encryption extension. When null, no ADE extension is created."
   type = object({
-    publisher                  = optional(string, "Microsoft.Azure.Security")
-    type                       = optional(string, "AzureDiskEncryption")
-    type_handler_version       = optional(string, "2.2")
-    auto_upgrade_minor_version = optional(bool, true)
+    publisher            = optional(string, "Microsoft.Azure.Security")
+    type                 = optional(string, "AzureDiskEncryption")
+    type_handler_version = optional(string, "2.2")
     settings = object({
       EncryptionOperation    = optional(string, "EnableEncryption")
       KeyEncryptionAlgorithm = optional(string, "RSA-OAEP")
       KeyVaultURL            = string
       KeyVaultResourceId     = string
       KeyEncryptionKeyURL    = string
-
-      SequenceVersion = optional(string)
-      VolumeType      = optional(string, "All")
+      KekVaultResourceId     = string
+      VolumeType             = optional(string, "All")
     })
   })
   default = null
 }
 
 
-variable "identity" {
-  description = "Configuration for VM Managed Identity. If encryption is enabled, SystemAssigned will be enforced."
-  type = object({
-    type                       = optional(string, "None")
-    user_assigned_identity_ids = optional(list(string), [])
-  })
-  validation {
-    condition     = contains(["None", "SystemAssigned", "UserAssigned"], var.identity.type)
-    error_message = "identity.type must be one of: None, SystemAssigned, UserAssigned."
-  }
-  default = {
-    type                       = "None"
-    user_assigned_identity_ids = []
-  }
-}

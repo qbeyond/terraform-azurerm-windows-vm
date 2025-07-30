@@ -20,6 +20,5 @@ locals {
   os_disk_name   = coalesce(var.name_overrides.os_disk, "disk-${var.virtual_machine_config.hostname}-Os")
   update_allowed = var.update_allowed ? "yes" : "no"
 
-  effective_identity_type = var.disk_encryption != null ? "SystemAssigned" : var.identity.type
-  effective_identity_ids  = var.disk_encryption != null ? [] : var.identity.user_assigned_identity_ids
+
 }

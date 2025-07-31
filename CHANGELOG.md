@@ -9,7 +9,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 ## [5.3] - 2025-07-31
 
 ### Added
-- Optional disk encryption support for Windows VMs, allowing users to enable Key Vault–based encryption (BEK only or with a Key Encryption Key). *(Backward-compatible feature.)*
+- Optional disk encryption support for Windows VMs, allowing users to enable Key Vault–based encryption.
 
 
 ## [5.2] - 2025-07-15

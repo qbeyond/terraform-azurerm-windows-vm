@@ -4,18 +4,6 @@ provider "azurerm" {
 
 data "azurerm_client_config" "current" {}
 
-output "test" {
-  value = data.azurerm_client_config.current
-}
-
-output "vault_id" {
-  value = azurerm_key_vault.this.id
-}
-
-output "vault_uri" {
-  value = azurerm_key_vault.this.vault_uri
-}
-
 resource "azurerm_role_assignment" "cryptouser" {
   scope                = azurerm_key_vault.this.id
   role_definition_name = "Key Vault Crypto Officer"

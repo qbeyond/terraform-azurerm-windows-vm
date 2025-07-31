@@ -4,7 +4,7 @@ provider "azurerm" {
 
 data "azurerm_client_config" "current" {}
 
-resource "azurerm_role_assignment" "cryptouser" {
+resource "azurerm_role_assignment" "key_vault_crypto_officer" {
   scope                = azurerm_key_vault.this.id
   role_definition_name = "Key Vault Crypto Officer"
   principal_id         = data.azurerm_client_config.current.object_id
@@ -52,7 +52,7 @@ resource "azurerm_key_vault_key" "this" {
   key_size     = 4096
   key_opts     = ["encrypt", "decrypt", "sign", "verify", "wrapKey", "unwrapKey"]
 
-  depends_on = [azurerm_role_assignment.cryptouser]
+  depends_on = [azurerm_role_assignment.key_vault_crypto_officer]
 }
 
 module "virtual_machine" {
@@ -85,7 +85,7 @@ module "virtual_machine" {
     }
   }
   depends_on = [
-    azurerm_role_assignment.cryptouser
+    azurerm_role_assignment.key_vault_crypto_officer
   ]
 }
 

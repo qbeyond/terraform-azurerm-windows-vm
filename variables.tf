@@ -385,7 +385,21 @@ variable "tags" {
 
 
 variable "disk_encryption" {
-  description = "Configuration for Azure Disk Encryption extension. When null, no ADE extension is created."
+  description = <<-DOC
+  Configuration for Azure Disk Encryption extension. When null, no ADE extension is created.
+  publisher: (Optional) The publisher of the Azure Disk Encryption extension. Defaults to "Microsoft.Azure.Security".
+type: (Optional) The type of the Azure Disk Encryption extension. Defaults to "AzureDiskEncryption".
+type_handler_version: (Optional) The version of the Azure Disk Encryption extension handler. Defaults to "2.2".
+settings: Configuration object for disk encryption settings.
+  EncryptionOperation: (Optional) The operation to perform. Defaults to "EnableEncryption".
+  KeyEncryptionAlgorithm: (Optional) The algorithm used for key encryption. Defaults to "RSA-OAEP".
+  KeyVaultURL: The URL of the Key Vault to use for encryption.
+  KeyVaultResourceId: The resource ID of the Key Vault to use for encryption.
+  KeyEncryptionKeyURL: The URL of the Key Encryption Key in the Key Vault.
+  KekVaultResourceId: The resource ID of the Key Encryption Key Vault.
+  VolumeType: (Optional) The type of volume to encrypt. Possible values are "All", "OS", or "Data". Defaults to "All".
+  DOC
+
   type = object({
     publisher            = optional(string, "Microsoft.Azure.Security")
     type                 = optional(string, "AzureDiskEncryption")
@@ -400,7 +414,17 @@ variable "disk_encryption" {
       VolumeType             = optional(string, "All")
     })
   })
+
+  validation {
+    condition     = contains(["All", "OS", "Data"], try(var.disk_encryption.settings.VolumeType, "All"))
+    error_message = "VolumeType must be one of 'All', 'OS', or 'Data'."
+  }
+
+  validation {
+    condition     = var.disk_encryption == null || var.disk_encryption.settings.KeyVaultURL != ""
+    error_message = "KeyVaultURL must be specified when disk_encryption is not null."
+  }
+
   default = null
 }
-
 

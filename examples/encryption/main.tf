@@ -85,9 +85,7 @@ module "virtual_machine" {
     }
   }
   depends_on = [
-    azurerm_role_assignment.cryptouser,
-    azurerm_key_vault.this,
-    azurerm_key_vault_key.this
+    azurerm_role_assignment.cryptouser
   ]
 }
 

@@ -1,12 +1,18 @@
 # Changelog
 
-All notable changes to this module will be documented in this file. 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+All notable changes to this module will be documented in this file.  
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),  
 and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [5.1.1] - 2025-07-15
+## [5.3] - 2025-07-31
+
+### Added
+- Optional disk encryption support for Windows VMs, allowing users to enable Key Vault–based encryption.
+
+
+## [5.2] - 2025-07-15
 
 ### Added
 
@@ -18,6 +24,9 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 ### Changed
 
 - In newer Azure provider versions, sku in public_ip_config defaults to "Standard" instead of "Basic". As a result, this optional variable was explicitly added with the default value set to "Standard"
+
+### Note
+- Requires recent Terraform versions to run the built-in validations successfully.
 
 ## [5.1.0] - 2025-02-27
 

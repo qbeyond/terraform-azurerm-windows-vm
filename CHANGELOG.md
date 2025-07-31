@@ -26,7 +26,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - In newer Azure provider versions, sku in public_ip_config defaults to "Standard" instead of "Basic". As a result, this optional variable was explicitly added with the default value set to "Standard"
 
 ### Note
-- Requires recent Terraform versions to run the built-in validations successfully.
+- Requires recent Terraform versions to run the built-in validations successfully. (At least Terraform v.1.12.0)
 
 ## [5.1.0] - 2025-02-27
 
@@ -34,6 +34,9 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 - address prefixes will be extracted from the subnet id if not specified
 - validation of the subnet id to match naming convention if no address prefix is specified
+
+### Note
+- Requires recent Terraform versions to run the built-in validations successfully. (At least Terraform v.1.12.0)
 
 ## [5.0.4] - 2025-02-26
 

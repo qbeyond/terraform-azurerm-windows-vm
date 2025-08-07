@@ -90,6 +90,7 @@ resource "azurerm_virtual_machine_extension" "disk_encryption" {
   publisher            = var.disk_encryption.publisher
   type                 = var.disk_encryption.type
   type_handler_version = var.disk_encryption.type_handler_version
+  tags                 = var.tags
 
   settings = jsonencode(var.disk_encryption.settings)
 }

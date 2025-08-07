@@ -4,7 +4,7 @@ resource "azurerm_public_ip" "this" {
   resource_group_name = var.resource_group_name
   location            = var.virtual_machine_config.location
   allocation_method   = var.public_ip_config.allocation_method
-  zones               = [var.virtual_machine_config.zone]
+  zones               = var.virtual_machine_config.zone != null ? [var.virtual_machine_config.zone] : null
   sku                 = var.public_ip_config.sku
 
   tags = var.tags
@@ -24,7 +24,6 @@ resource "azurerm_network_interface" "this" {
     private_ip_address            = var.nic_config.private_ip
     public_ip_address_id          = var.public_ip_config.enabled ? azurerm_public_ip.this[0].id : null
   }
-
   tags = var.tags
 }
 
@@ -32,6 +31,12 @@ resource "azurerm_network_interface_security_group_association" "this" {
   count                     = var.nic_config.nsg != null ? 1 : 0
   network_interface_id      = azurerm_network_interface.this.id
   network_security_group_id = var.nic_config.nsg.id
+}
+
+resource "azurerm_network_interface_application_security_group_association" "additional_nics" {
+  count                         = var.additional_network_interface_ids != [] && var.nic_config.asg != null ? length(var.additional_network_interface_ids) : 0
+  network_interface_id          = var.additional_network_interface_ids[count.index]
+  application_security_group_id = var.nic_config.asg.id
 }
 
 resource "azurerm_windows_virtual_machine" "this" {
@@ -90,6 +95,7 @@ resource "azurerm_virtual_machine_extension" "disk_encryption" {
   publisher            = var.disk_encryption.publisher
   type                 = var.disk_encryption.type
   type_handler_version = var.disk_encryption.type_handler_version
+  tags                 = var.tags
 
   settings = jsonencode(var.disk_encryption.settings)
 }

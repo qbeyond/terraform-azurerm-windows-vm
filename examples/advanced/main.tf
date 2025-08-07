@@ -15,24 +15,25 @@ module "virtual_machine" {
     dns_servers                   = ["10.0.0.10", "10.0.0.11"]
     enable_accelerated_networking = false
     nsg                           = azurerm_network_security_group.this
+    asg                           = azurerm_application_security_group.this
   }
   virtual_machine_config = {
-    hostname                     = "CUSTAPP007"
-    location                     = azurerm_resource_group.this.location
-    size                         = "Standard_B1s"
-    os_sku                       = "2022-datacenter-g2"
-    os_version                   = "latest"
-    os_disk_name                 = "DiskOverride"
-    os_disk_size_gb              = 128
-    os_disk_caching              = "ReadWrite"
-    os_disk_storage_type         = "Standard_LRS"
+    hostname                          = "CUSTAPP007"
+    location                          = azurerm_resource_group.this.location
+    size                              = "Standard_B1s"
+    os_sku                            = "2022-datacenter-g2"
+    os_version                        = "latest"
+    os_disk_name                      = "DiskOverride"
+    os_disk_size_gb                   = 128
+    os_disk_caching                   = "ReadWrite"
+    os_disk_storage_type              = "Standard_LRS"
     os_disk_write_accelerator_enabled = false
-    availability_set_id          = azurerm_availability_set.this.id
-    proximity_placement_group_id = azurerm_proximity_placement_group.this.id
+    availability_set_id               = azurerm_availability_set.this.id
+    proximity_placement_group_id      = azurerm_proximity_placement_group.this.id
 
-    admin_username               = "loc_admin"
+    admin_username = "loc_admin"
 
-    timezone                     = "Azores Standard Time"
+    timezone = "Azores Standard Time"
 
     patch_assessment_mode                                  = "AutomaticByPlatform"
     patch_mode                                             = "AutomaticByPlatform"
@@ -105,17 +106,17 @@ resource "azurerm_proximity_placement_group" "this" {
   name                = local.proximity_placement_group_name
   location            = local.location
   resource_group_name = azurerm_resource_group.this.name
-  
+
   lifecycle {
-      ignore_changes = [tags]
+    ignore_changes = [tags]
   }
 }
 
 resource "azurerm_network_interface" "additional_nic_01" {
-  name                          = "nic-vm-${replace(element(azurerm_virtual_network.this.address_space,0), "/[./]/", "-")}-01"
-  location                      = local.location
-  resource_group_name           = azurerm_resource_group.this.name
-  dns_servers                   = []
+  name                = "nic-vm-${replace(element(azurerm_virtual_network.this.address_space, 0), "/[./]/", "-")}-01"
+  location            = local.location
+  resource_group_name = azurerm_resource_group.this.name
+  dns_servers         = []
 
   ip_configuration {
     name                          = "ip-nic-01"
@@ -148,4 +149,10 @@ resource "azurerm_network_security_group" "this" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+}
+
+resource "azurerm_application_security_group" "this" {
+  name                = "asg-example"
+  location            = local.location
+  resource_group_name = azurerm_resource_group.this.name
 }

@@ -6,12 +6,17 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [6.0] - 2025-08-27
+## [6.1.0] - 2025-10-03
+
+### Added
+- Capability to set specific tags to datadisks
+
+## [6.0.0] - 2025-08-27
 
 ### Changed
 - azurerm version to ~> 4.0
 
-## [5.4] - 2025-08-07
+## [5.4.0] - 2025-08-07
 
 ### Added
 - Feature for additional nics
@@ -20,13 +25,13 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 ### Fixed
 - Fixed example for pip zones
 
-## [5.3] - 2025-07-31
+## [5.3.0] - 2025-07-31
 
 ### Added
 - Optional disk encryption support for Windows VMs, allowing users to enable Key Vault–based encryption.
 
 
-## [5.2] - 2025-07-15
+## [5.2.0] - 2025-07-15
 
 ### Added
 

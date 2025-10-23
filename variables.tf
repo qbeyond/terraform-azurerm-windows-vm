@@ -11,7 +11,6 @@ variable "public_ip_config" {
     condition     = contains(["Static", "Dynamic"], var.public_ip_config.allocation_method)
     error_message = "Allocation method must be Static or Dynamic"
   }
-
   validation {
     condition = (
       var.virtual_machine_config.zone == null || var.public_ip_config.sku == "Standard"
@@ -126,7 +125,6 @@ variable "virtual_machine_config" {
     ])
     error_message = "Zone must be null or one of '1', '2', or '3'."
   }
-
   validation {
     condition     = var.virtual_machine_config.zone != null ? var.virtual_machine_config.availability_set_id == null : true
     error_message = "Either 'zone' or 'availability_set_id' can be set, but not both."
@@ -180,7 +178,6 @@ variable "admin_password" {
   sensitive   = true
   description = "Password of the local administrator."
 }
-
 
 variable "data_disks" {
   type = map(object({
@@ -268,7 +265,6 @@ variable "data_disks" {
     )])
     error_message = "When a data disk source resource ID is specified then create option must be either 'Copy' or 'Restore'."
   }
-
   validation {
     condition = alltrue([
       for o in var.data_disks : (
@@ -284,23 +280,44 @@ variable "data_disks" {
     ])
     error_message = "disk_iops_read_write, disk_mbps_read_write, disk_iops_read_only and disk_mbps_read_only can only be set for UltraSSD_LRS or PremiumV2_LRS storage account types."
   }
-
   validation {
     condition = alltrue([
       for o in var.data_disks : (
+        o.max_shares == null || o.max_shares >= 1 &&
         (
-          o.disk_iops_read_only == null && o.disk_mbps_read_only == null
-          ) || (
-          contains(["UltraSSD_LRS", "PremiumV2_LRS"], o.storage_account_type) &&
-          o.max_shares != null &&
-          o.max_shares > 1 &&
-          o.max_shares <= 10
+          // Ultra SSD: max 5
+          (o.storage_account_type == "UltraSSD_LRS" && o.max_shares <= 5) ||
+
+          // PremiumV2 SSD: max 5
+          (o.storage_account_type == "PremiumV2_LRS" && o.max_shares <= 15) ||
+
+          // Premium SSD: P15/P20 max 2
+          (o.storage_account_type == "Premium_LRS" &&
+            (
+              (o.disk_size_gb >= 128 && o.disk_size_gb < 256 && o.max_shares <= 2) || // P15
+              (o.disk_size_gb >= 256 && o.disk_size_gb < 512 && o.max_shares <= 2) || // P20
+
+              // P30/P40/P50 max 5
+              (o.disk_size_gb >= 512 && o.disk_size_gb < 2048 && o.max_shares <= 5) ||
+
+              // P60/P70/P80 max 10
+              (o.disk_size_gb >= 2048 && o.max_shares <= 10)
+            )
+          ) ||
+
+          // Standard SSD
+          (o.storage_account_type == "StandardSSD_LRS" &&
+            (
+              (o.disk_size_gb >= 32 && o.disk_size_gb < 256 && o.max_shares <= 3) ||   // E1–E20
+              (o.disk_size_gb >= 256 && o.disk_size_gb < 1024 && o.max_shares <= 5) || // E30–E50
+              (o.disk_size_gb >= 1024 && o.max_shares <= 10)                           // E60–E80
+            )
+          )
         )
       )
     ])
-    error_message = "disk_iops_read_only and disk_mbps_read_only can only be set for UltraSSD_LRS or PremiumV2_LRS disks with shared disk enabled (max_shares between 2 and 10)."
+    error_message = "Invalid max_shares value for the given disk size and storage account type."
   }
-
   validation {
     condition = alltrue([
       for o in var.data_disks :
@@ -317,7 +334,6 @@ variable "data_disks" {
     ])
     error_message = "disk_iops_read_write and disk_iops_read_only must be between 3000 and 64000 if set."
   }
-
   validation {
     condition = alltrue([
       for o in var.data_disks : (
@@ -327,7 +343,6 @@ variable "data_disks" {
     ])
     error_message = "disk_mbps_read_write and disk_mbps_read_only must be between 125 and 1000 if set."
   }
-
   validation {
     condition = alltrue([
       for v in var.data_disks :
@@ -358,7 +373,7 @@ variable "data_disks" {
     disk_mbps_read_write: (Optional) The maximum number of MBps allowed for the disk in read/write operations.
     disk_iops_read_only: (Optional) The maximum number of IOPS allowed for the disk in read-only operations.
     disk_mbps_read_only: (Optional) The maximum number of MBps allowed for the disk in read-only operations.
-    max_shares: (Optional) The maximum number of VMs that can share this disk. Only for UltraSSD_LRS and PremiumV2_LRS disks.
+    max_shares: (Optional) The maximum number of VMs that can share this disk.
    }
   ```
   DOC
@@ -388,21 +403,22 @@ variable "tags" {
   default     = {}
 }
 
-
 variable "disk_encryption" {
   description = <<-DOC
+  ```
   Configuration for Azure Disk Encryption extension. When null, no ADE extension is created.
-  publisher: (Optional) The publisher of the Azure Disk Encryption extension. Defaults to "Microsoft.Azure.Security".
-type: (Optional) The type of the Azure Disk Encryption extension. Defaults to "AzureDiskEncryption".
-type_handler_version: (Optional) The version of the Azure Disk Encryption extension handler. Defaults to "2.2".
-settings: Configuration object for disk encryption settings.
-  EncryptionOperation: (Optional) The operation to perform. Defaults to "EnableEncryption".
-  KeyEncryptionAlgorithm: (Optional) The algorithm used for key encryption. Defaults to "RSA-OAEP".
-  KeyVaultURL: The URL of the Key Vault to use for encryption.
-  KeyVaultResourceId: The resource ID of the Key Vault to use for encryption.
-  KeyEncryptionKeyURL: The URL of the Key Encryption Key in the Key Vault.
-  KekVaultResourceId: The resource ID of the Key Encryption Key Vault.
-  VolumeType: (Optional) The type of volume to encrypt. Possible values are "All", "OS", or "Data". Defaults to "All".
+    publisher: (Optional) The publisher of the Azure Disk Encryption extension. Defaults to "Microsoft.Azure.Security".
+    type: (Optional) The type of the Azure Disk Encryption extension. Defaults to "AzureDiskEncryption".
+    type_handler_version: (Optional) The version of the Azure Disk Encryption extension handler. Defaults to "2.2".
+    settings: Configuration object for disk encryption settings.
+      EncryptionOperation: (Optional) The operation to perform. Defaults to "EnableEncryption".
+      KeyEncryptionAlgorithm: (Optional) The algorithm used for key encryption. Defaults to "RSA-OAEP".
+      KeyVaultURL: The URL of the Key Vault to use for encryption.
+      KeyVaultResourceId: The resource ID of the Key Vault to use for encryption.
+      KeyEncryptionKeyURL: The URL of the Key Encryption Key in the Key Vault.
+      KekVaultResourceId: The resource ID of the Key Encryption Key Vault.
+      VolumeType: (Optional) The type of volume to encrypt. Possible values are "All", "OS", or "Data". Defaults to "All".
+  ```
   DOC
 
   type = object({
@@ -421,15 +437,22 @@ settings: Configuration object for disk encryption settings.
   })
 
   validation {
-    condition     = contains(["All", "OS", "Data"], try(var.disk_encryption.settings.VolumeType, "All"))
-    error_message = "VolumeType must be one of 'All', 'OS', or 'Data'."
+    condition = (
+      var.disk_encryption == null || (var.disk_encryption != null &&
+      contains(["All", "OS", "Data"], try(var.disk_encryption.settings.VolumeType, "All")))
+    )
+    error_message = "VolumeType must be one of 'All', 'OS', or 'Data', when disk_encryption is not null."
   }
-
   validation {
-    condition     = var.disk_encryption == null || var.disk_encryption.settings.KeyVaultURL != ""
+    condition = (
+      var.disk_encryption == null ||
+      (
+        var.disk_encryption.settings != null &&
+        var.disk_encryption.settings.KeyVaultURL != ""
+      )
+    )
     error_message = "KeyVaultURL must be specified when disk_encryption is not null."
   }
 
   default = null
 }
-

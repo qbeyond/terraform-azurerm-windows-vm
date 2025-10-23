@@ -6,30 +6,40 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.1.1] - 2025-10-23
+
+### Fixed
+
+- Fixed validation of variables which permit compatibility with module version 5.2 and up.
+
 ## [6.1.0] - 2025-10-03
 
 ### Added
+
 - Capability to set specific tags to datadisks
 
 ## [6.0.0] - 2025-08-27
 
 ### Changed
+
 - azurerm version to ~> 4.0
 
 ## [5.4.0] - 2025-08-07
 
 ### Added
+
 - Feature for additional nics
 - Tags for the disk encryption
 
 ### Fixed
+
 - Fixed example for pip zones
 
 ## [5.3.0] - 2025-07-31
 
 ### Added
-- Optional disk encryption support for Windows VMs, allowing users to enable Key Vault–based encryption.
 
+- Optional disk encryption support for Windows VMs, allowing users to enable Key Vault–based encryption.
 
 ## [5.2.0] - 2025-07-15
 
@@ -45,6 +55,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - In newer Azure provider versions, sku in public_ip_config defaults to "Standard" instead of "Basic". As a result, this optional variable was explicitly added with the default value set to "Standard"
 
 ### Note
+
 - Requires recent Terraform versions to run the built-in validations successfully. (At least Terraform v.1.12.0)
 
 ## [5.1.0] - 2025-02-27
@@ -55,6 +66,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - validation of the subnet id to match naming convention if no address prefix is specified
 
 ### Note
+
 - Requires recent Terraform versions to run the built-in validations successfully. (At least Terraform v.1.12.0)
 
 ## [5.0.4] - 2025-02-26
@@ -74,6 +86,7 @@ Bugfix in type validation of `virtual_machine_config.zone`.
 Bugfix to make update management work again by default.
 
 ### Changed
+
 - Set var.virtual_machine_config.bypass_platform_safety_checks_on_user_schedule_enabled to true
 
 ## [5.0.0] - 2024-08-30
@@ -133,7 +146,6 @@ To upgrade to this new major version from `2.x` without changes to VMs (and ther
     - `severity_group=""` if not already set
 
 1. Run `terraform plan` and check if the values of the VM planned to change
-
 
     - If the values of the properties are planned to change, use actual values instead of the above
 

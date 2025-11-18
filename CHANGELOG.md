@@ -6,6 +6,12 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.0.0] - 2025-11-18
+
+### Added
+
+- Added vtpm and secure boot variables
+
 ## [6.1.1] - 2025-10-23
 
 ### Fixed

@@ -71,6 +71,8 @@ resource "azurerm_windows_virtual_machine" "this" {
   timezone                                               = var.virtual_machine_config.timezone
   patch_mode                                             = var.virtual_machine_config.patch_mode
   patch_assessment_mode                                  = var.virtual_machine_config.patch_assessment_mode
+  vtpm_enabled                                           = var.virtual_machine_config.vtpm_enabled
+  secure_boot_enabled                                    = var.virtual_machine_config.secure_boot_enabled
   bypass_platform_safety_checks_on_user_schedule_enabled = var.virtual_machine_config.bypass_platform_safety_checks_on_user_schedule_enabled
 
   additional_capabilities {

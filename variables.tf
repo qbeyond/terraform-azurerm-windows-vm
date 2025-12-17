@@ -99,6 +99,8 @@ variable "virtual_machine_config" {
     proximity_placement_group_id                           = optional(string)
     patch_assessment_mode                                  = optional(string, "AutomaticByPlatform")
     patch_mode                                             = optional(string, "AutomaticByPlatform")
+    vtpm_enabled                                           = optional(bool, true)
+    secure_boot_enabled                                    = optional(bool, true)
     bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
 
     additional_capabilities = optional(object({

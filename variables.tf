@@ -135,11 +135,6 @@ variable "virtual_machine_config" {
     condition     = var.virtual_machine_config.zone != null ? var.virtual_machine_config.availability_set_id == null : true
     error_message = "Either 'zone' or 'availability_set_id' can be set, but not both."
   }
-  validation {
-    condition     = (var.virtual_machine_config.provision_vm_agent == false && var.virtual_machine_config.allow_extension_operations == false)
-    error_message = "If provision_vm_agent is set to false then allow_extension_operations must also be set to false"
-  }
-
   description = <<-DOC
   ```
     hostname: Name of the host system.
@@ -163,6 +158,7 @@ variable "virtual_machine_config" {
     proximity_placement_group_id: (Optional) The ID of the Proximity Placement Group which the Virtual Machine should be assigned to.
     patch_assessment_mode: Specifies the mode of VM Guest Patching for the Virtual Machine.
     patch_mode:  Specifies the mode of in-guest patching to this Windows Virtual Machine.
+    
     bypass_platform_safety_checks_on_user_schedule_enabled: This setting ensures that machines are patched by using your configured schedules and not autopatched.
        Can only be set to true when patch_mode is set to AutomaticByPlatform.
     additional_capabilities: (Optional) Additional capabilities for the virtual machine.

@@ -158,7 +158,9 @@ variable "virtual_machine_config" {
     proximity_placement_group_id: (Optional) The ID of the Proximity Placement Group which the Virtual Machine should be assigned to.
     patch_assessment_mode: Specifies the mode of VM Guest Patching for the Virtual Machine.
     patch_mode:  Specifies the mode of in-guest patching to this Windows Virtual Machine.
-    
+    provision_vm_agent: Optionally specify whether the VM agent should be provisioned. Defaults to true.
+    allow_extension_operations: Optionally specify whether extension operations are allowed. Defaults to true.
+    enable_automatic_updates: Optionally specify whether automatic updates are enabled. Defaults to true. (Will be deprecated with version 5.0 of provider)
     bypass_platform_safety_checks_on_user_schedule_enabled: This setting ensures that machines are patched by using your configured schedules and not autopatched.
        Can only be set to true when patch_mode is set to AutomaticByPlatform.
     additional_capabilities: (Optional) Additional capabilities for the virtual machine.

@@ -6,6 +6,13 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.1.0] - 2026-01-28
+
+### Added
+
+- Added provision_vm_agent, allow_extension_operations and enable_automatic_updates variable
+
+
 ## [7.0.0] - 2025-11-18
 
 ### Added

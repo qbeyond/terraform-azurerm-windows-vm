@@ -102,6 +102,7 @@ variable "virtual_machine_config" {
     vtpm_enabled                                           = optional(bool, true)
     secure_boot_enabled                                    = optional(bool, true)
     bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
+    provision_vm_agent                                     = optional(bool, true)
 
     additional_capabilities = optional(object({
       ultra_ssd_enabled   = optional(bool, false)

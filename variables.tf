@@ -103,6 +103,9 @@ variable "virtual_machine_config" {
     secure_boot_enabled                                    = optional(bool, true)
     bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
     provision_vm_agent                                     = optional(bool, true)
+    allow_extension_operations                             = optional(bool, true)
+    enable_automatic_updates                               = optional(bool, true)
+
 
     additional_capabilities = optional(object({
       ultra_ssd_enabled   = optional(bool, false)
@@ -131,6 +134,10 @@ variable "virtual_machine_config" {
   validation {
     condition     = var.virtual_machine_config.zone != null ? var.virtual_machine_config.availability_set_id == null : true
     error_message = "Either 'zone' or 'availability_set_id' can be set, but not both."
+  }
+  validation {
+    condition     = (var.virtual_machine_config.provision_vm_agent == false && var.virtual_machine_config.allow_extension_operations == false)
+    error_message = "If provision_vm_agent is set to false then allow_extension_operations must also be set to false"
   }
 
   description = <<-DOC

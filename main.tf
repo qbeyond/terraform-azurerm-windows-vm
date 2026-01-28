@@ -40,14 +40,16 @@ resource "azurerm_network_interface_application_security_group_association" "add
 }
 
 resource "azurerm_windows_virtual_machine" "this" {
-  name                = local.virtual_machine.name
-  computer_name       = var.virtual_machine_config.hostname
-  location            = var.virtual_machine_config.location
-  resource_group_name = var.resource_group_name
-  size                = var.virtual_machine_config.size
-  provision_vm_agent  = var.virtual_machine_config.provision_vm_agent
-  admin_username      = var.virtual_machine_config.admin_username
-  admin_password      = var.admin_password
+  name                       = local.virtual_machine.name
+  computer_name              = var.virtual_machine_config.hostname
+  location                   = var.virtual_machine_config.location
+  resource_group_name        = var.resource_group_name
+  size                       = var.virtual_machine_config.size
+  provision_vm_agent         = var.virtual_machine_config.provision_vm_agent
+  allow_extension_operations = var.virtual_machine_config.allow_extension_operations
+  admin_username             = var.virtual_machine_config.admin_username
+  admin_password             = var.admin_password
+  enable_automatic_updates   = var.virtual_machine_config.enable_automatic_updates
 
   os_disk {
     name                 = local.os_disk_name

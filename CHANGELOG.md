@@ -6,11 +6,15 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [7.1.0] - 2026-01-28
+## [8.0.0] - 2026-02-02
 
 ### Added
 
-- Added provision_vm_agent, allow_extension_operations and enable_automatic_updates variable
+- Added provision_vm_agent, allow_extension_operations, enable_automatic_updates, boot_diagnostics and identity variable to the VM resource
+- Added is_imported variable to specify a existing VM, that needs to be imported with this module. With the value true the module will ignore the following changes:
+  VM: identity, source_image_reference, source_image_id, timezone, admin_username, computer_name, admin_password
+  Data Disk: upload_size_bytes, create_option, source_resource_id
+- Added trusted_launch_enabled to the data disk resource
 
 ## [7.0.0] - 2025-11-18
 

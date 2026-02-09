@@ -14,6 +14,7 @@ This module provisions a windows virtual machine. Refer to the examples on how t
 ###### Basic
 ```hcl
 provider "azurerm" {
+  subscription_id = "" # <-- Fill in Subscription ID
   features {}
 }
 
@@ -27,11 +28,14 @@ module "virtual_machine" {
     os_sku               = "2022-Datacenter"
     os_version           = "latest"
     os_disk_storage_type = "Standard_LRS"
+    vtpm_enabled         = false
+    secure_boot_enabled  = false
   }
   admin_password      = "H3ll0W0rld!"
   resource_group_name = azurerm_resource_group.this.name
   subnet              = azurerm_subnet.this
   severity_group      = "01-first-monday-2000-csu-reboot"
+
 }
 
 resource "azurerm_resource_group" "this" {
@@ -249,7 +253,7 @@ resource "azurerm_application_security_group" "this" {
 
       | Type | Used |
       |------|-------|
-        | [azurerm_managed_disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk) | 1 |
+        | [azurerm_managed_disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk) | 2 |
         | [azurerm_network_interface](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface) | 1 |
         | [azurerm_network_interface_application_security_group_association](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface_application_security_group_association) | 1 |
         | [azurerm_network_interface_security_group_association](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface_security_group_association) | 1 |
@@ -271,6 +275,7 @@ No modules.
             | Name | Type |
             |------|------|
                   | [azurerm_managed_disk.data_disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk) | resource |
+                  | [azurerm_managed_disk.imported](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk) | resource |
                   | [azurerm_virtual_machine_data_disk_attachment.data_disk](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_data_disk_attachment) | resource |
 
             ### main.tf

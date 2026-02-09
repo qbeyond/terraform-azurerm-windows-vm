@@ -15,6 +15,8 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
   VM: identity, source_image_reference, source_image_id, timezone, admin_username, computer_name, admin_password
   Data Disk: upload_size_bytes, create_option, source_resource_id
 - Added trusted_launch_enabled to the data disk resource
+- Added new example for testing imported VM`s
+- Updated basic example
 
 ## [7.0.0] - 2025-11-18
 

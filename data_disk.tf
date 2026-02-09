@@ -1,8 +1,8 @@
 resource "azurerm_managed_disk" "data_disk" {
-  for_each                   = var.is_imported ? 0 : var.var.data_disks
+  for_each                   = var.is_imported ? {} : var.data_disks
   name                       = lookup(var.name_overrides.data_disks, each.key, "disk-${var.virtual_machine_config.hostname}-${each.key}")
   location                   = var.virtual_machine_config.location
-  resource_group_name        = var.resource_group_name
+  resource_group_name        = var.name_overrides.resource_group_name != null ? var.name_overrides.resource_group_name : var.resource_group_name
   storage_account_type       = each.value["storage_account_type"]
   create_option              = each.value["create_option"]
   source_resource_id         = each.value["source_resource_id"]
@@ -25,11 +25,11 @@ resource "azurerm_managed_disk" "data_disk" {
   }
 }
 
-resource "azurerm_managed_disk" "data_disk" {
-  for_each                   = var.is_imported ? var.var.data_disks : 0
+resource "azurerm_managed_disk" "imported" {
+  for_each                   = var.is_imported ? var.data_disks : {}
   name                       = lookup(var.name_overrides.data_disks, each.key, "disk-${var.virtual_machine_config.hostname}-${each.key}")
   location                   = var.virtual_machine_config.location
-  resource_group_name        = var.resource_group_name
+  resource_group_name        = var.name_overrides.resource_group_name != null ? var.name_overrides.resource_group_name : var.resource_group_name
   storage_account_type       = each.value["storage_account_type"]
   create_option              = each.value["create_option"]
   source_resource_id         = each.value["source_resource_id"]
@@ -60,7 +60,7 @@ resource "azurerm_managed_disk" "data_disk" {
 resource "azurerm_virtual_machine_data_disk_attachment" "data_disk" {
   for_each                  = var.data_disks
   managed_disk_id           = azurerm_managed_disk.data_disk[each.key].id
-  virtual_machine_id        = azurerm_windows_virtual_machine.this.id
+  virtual_machine_id        = var.is_imported ? azurerm_windows_virtual_machine.imported[0].id : azurerm_windows_virtual_machine.this[0].id
   lun                       = each.value["lun"]
   caching                   = each.value["caching"]
   write_accelerator_enabled = each.value["write_accelerator_enabled"]

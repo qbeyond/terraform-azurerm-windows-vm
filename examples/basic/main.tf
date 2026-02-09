@@ -1,4 +1,5 @@
 provider "azurerm" {
+  subscription_id = "" # <-- Fill in Subscription ID
   features {}
 }
 
@@ -12,11 +13,14 @@ module "virtual_machine" {
     os_sku               = "2022-Datacenter"
     os_version           = "latest"
     os_disk_storage_type = "Standard_LRS"
+    vtpm_enabled         = false
+    secure_boot_enabled  = false
   }
   admin_password      = "H3ll0W0rld!"
   resource_group_name = azurerm_resource_group.this.name
   subnet              = azurerm_subnet.this
   severity_group      = "01-first-monday-2000-csu-reboot"
+
 }
 
 resource "azurerm_resource_group" "this" {

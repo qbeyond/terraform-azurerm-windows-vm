@@ -13,7 +13,7 @@ resource "azurerm_public_ip" "this" {
 resource "azurerm_network_interface" "this" {
   name                           = local.nic.name
   location                       = var.virtual_machine_config.location
-  resource_group_name            = var.resource_group_name
+  resource_group_name            = var.name_overrides.resource_group_name != null ? var.name_overrides.resource_group_name : var.resource_group_name
   dns_servers                    = var.nic_config.dns_servers
   accelerated_networking_enabled = var.nic_config.enable_accelerated_networking
 
@@ -171,7 +171,7 @@ resource "azurerm_virtual_machine_extension" "disk_encryption" {
   count = var.disk_encryption != null ? 1 : 0
 
   name                 = "${var.virtual_machine_config.hostname}-diskEncryption"
-  virtual_machine_id   = azurerm_windows_virtual_machine.this.id
+  virtual_machine_id   = var.is_imported ? azurerm_windows_virtual_machine.imported[0].id : azurerm_windows_virtual_machine.this[0].id
   publisher            = var.disk_encryption.publisher
   type                 = var.disk_encryption.type
   type_handler_version = var.disk_encryption.type_handler_version

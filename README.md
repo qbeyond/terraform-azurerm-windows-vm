@@ -14,7 +14,7 @@ This module provisions a windows virtual machine. Refer to the examples on how t
 ###### Basic
 ```hcl
 provider "azurerm" {
-  subscription_id = "" # <-- Fill in Subscription ID
+  subscription_id = "<Subscription ID>" # <-- Fill in Subscription ID
   features {}
 }
 
@@ -36,6 +36,18 @@ module "virtual_machine" {
   subnet              = azurerm_subnet.this
   severity_group      = "01-first-monday-2000-csu-reboot"
 
+  data_disks = {
+    "Data00" = {
+      lun                        = 0
+      disk_size_gb               = 256
+      caching                    = "None"
+      create_option              = "Empty"
+      storage_account_type       = "Premium_LRS"
+      write_accelerator_enabled  = false
+      on_demand_bursting_enabled = false
+      trusted_launch_enabled     = false
+    }
+  }
 }
 
 resource "azurerm_resource_group" "this" {

@@ -79,6 +79,20 @@ variable "subnet" {
   }
 }
 
+variable "is_imported" {
+  type = bool
+  nullable = false
+  default = false
+  description = <<-DOC
+  ```
+    Optianally. Specify whether the VM is imported from an existing VM. Defaults to false. 
+    If the VM is imported (true) the resource will not try to change the following properties: 
+    VM: identity, source_image_reference, source_image_id, timezone, admin_username, computer_name, admin_password 
+    Data Disk: upload_size_bytes, create_option, source_resource_id
+  ```
+  DOC
+}
+
 variable "virtual_machine_config" {
   type = object({
     hostname                                               = string
@@ -102,10 +116,23 @@ variable "virtual_machine_config" {
     vtpm_enabled                                           = optional(bool, true)
     secure_boot_enabled                                    = optional(bool, true)
     bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
+    provision_vm_agent                                     = optional(bool, true)
+    allow_extension_operations                             = optional(bool, true)
+    enable_automatic_updates                               = optional(bool, true)
+
 
     additional_capabilities = optional(object({
       ultra_ssd_enabled   = optional(bool, false)
       hibernation_enabled = optional(bool, false)
+    }), {})
+
+    identity = optional(object({
+      identity_type = optional(string, null)
+      identity_ids  = optional(list(string), null)
+    }))
+
+    boot_diagnostics = optional(object({
+      storage_account_uri = optional(string, null)
     }), {})
   })
 
@@ -131,7 +158,10 @@ variable "virtual_machine_config" {
     condition     = var.virtual_machine_config.zone != null ? var.virtual_machine_config.availability_set_id == null : true
     error_message = "Either 'zone' or 'availability_set_id' can be set, but not both."
   }
-
+  validation {
+    condition     = var.virtual_machine_config.identity == null ? true : contains(["SystemAssigned", "UserAssigned", "SystemAssigned, UserAssigned"], var.virtual_machine_config.identity.identity_type)
+    error_message = "identity_type must be one of 'SystemAssigned', 'UserAssigned' or 'SystemAssigned, UserAssigned'."
+  }
   description = <<-DOC
   ```
     hostname: Name of the host system.
@@ -155,11 +185,19 @@ variable "virtual_machine_config" {
     proximity_placement_group_id: (Optional) The ID of the Proximity Placement Group which the Virtual Machine should be assigned to.
     patch_assessment_mode: Specifies the mode of VM Guest Patching for the Virtual Machine.
     patch_mode:  Specifies the mode of in-guest patching to this Windows Virtual Machine.
+    provision_vm_agent: Optionally specify whether the VM agent should be provisioned. Defaults to true.
+    allow_extension_operations: Optionally specify whether extension operations are allowed. Defaults to true.
+    enable_automatic_updates: Optionally specify whether automatic updates are enabled. Defaults to true. (Will be deprecated with version 5.0 of provider)
     bypass_platform_safety_checks_on_user_schedule_enabled: This setting ensures that machines are patched by using your configured schedules and not autopatched.
        Can only be set to true when patch_mode is set to AutomaticByPlatform.
     additional_capabilities: (Optional) Additional capabilities for the virtual machine.
       ultra_ssd_enabled: (Optional) Enable UltraSSD_LRS for the virtual machine. Defaults to false.
       hibernation_enabled: (Optional) Enable hibernation for the virtual machine. Defaults to false.       
+    identity: (Optional) Identity configuration for the virtual machine.
+      identity_type: (Optional) The type of identity used for the Virtual Machine. Possible values are 'SystemAssigned', 'UserAssigned', 'SystemAssigned, UserAssigned' and null. Defaults to null.
+      identity_ids: (Optional) List of User Assigned Identity IDs when identity_type is set to 'UserAssigned' or 'SystemAssigned, UserAssigned'. Defaults to null.
+    boot_diagnostics: (Optional) Boot diagnostics configuration for the virtual machine.
+      storage_account_uri: (Optional) The URI of the storage account to use for boot diagnostics. Defaults to null.
   ```
   DOC
 }
@@ -197,6 +235,7 @@ variable "data_disks" {
     disk_mbps_read_only        = optional(number)
     max_shares                 = optional(number)
     tags                       = optional(map(string), {})
+    trusted_launch_enabled     = optional(bool, true)
   }))
   validation {
     condition     = length([for v in var.data_disks : v.lun]) == length(distinct([for v in var.data_disks : v.lun]))
@@ -388,12 +427,14 @@ variable "resource_group_name" {
 
 variable "name_overrides" {
   type = object({
-    nic             = optional(string)
-    nic_ip_config   = optional(string)
-    public_ip       = optional(string)
-    virtual_machine = optional(string)
-    os_disk         = optional(string)
-    data_disks      = optional(map(string), {})
+    nic                 = optional(string)
+    nic_ip_config       = optional(string)
+    public_ip           = optional(string)
+    virtual_machine     = optional(string)
+    os_disk             = optional(string)
+    data_disks          = optional(map(string), {})
+    hostname            = optional(string)
+    resource_group_name = optional(string)
   })
   description = "Possibility to override names that will be generated according to q.beyond naming convention."
   default     = {}

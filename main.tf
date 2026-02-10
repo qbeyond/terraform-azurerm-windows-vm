@@ -1,6 +1,6 @@
 resource "azurerm_public_ip" "this" {
   count               = var.public_ip_config.enabled ? 1 : 0
-  name                = local.public_ip.name
+  name                = var.name_overrides.resource_group_name_public_ip != null ? var.name_overrides.resource_group_name_public_ip : var.resource_group_name
   resource_group_name = var.resource_group_name
   location            = var.virtual_machine_config.location
   allocation_method   = var.public_ip_config.allocation_method
@@ -13,7 +13,7 @@ resource "azurerm_public_ip" "this" {
 resource "azurerm_network_interface" "this" {
   name                           = local.nic.name
   location                       = var.virtual_machine_config.location
-  resource_group_name            = var.name_overrides.resource_group_name != null ? var.name_overrides.resource_group_name : var.resource_group_name
+  resource_group_name            = var.name_overrides.resource_group_name_nic != null ? var.name_overrides.resource_group_name_nic : var.resource_group_name
   dns_servers                    = var.nic_config.dns_servers
   accelerated_networking_enabled = var.nic_config.enable_accelerated_networking
 
@@ -44,7 +44,7 @@ resource "azurerm_windows_virtual_machine" "this" {
   name                       = local.virtual_machine.name
   computer_name              = var.name_overrides.hostname != null ? var.name_overrides.hostname : var.virtual_machine_config.hostname
   location                   = var.virtual_machine_config.location
-  resource_group_name        = var.name_overrides.resource_group_name != null ? var.name_overrides.resource_group_name : var.resource_group_name
+  resource_group_name        = var.name_overrides.resource_group_name_vm != null ? var.name_overrides.resource_group_name_vm : var.resource_group_name
   size                       = var.virtual_machine_config.size
   provision_vm_agent         = var.virtual_machine_config.provision_vm_agent
   allow_extension_operations = var.virtual_machine_config.allow_extension_operations
@@ -108,7 +108,7 @@ resource "azurerm_windows_virtual_machine" "imported" {
   name                       = local.virtual_machine.name
   computer_name              = var.name_overrides.hostname != null ? var.name_overrides.hostname : var.virtual_machine_config.hostname
   location                   = var.virtual_machine_config.location
-  resource_group_name        = var.name_overrides.resource_group_name != null ? var.name_overrides.resource_group_name : var.resource_group_name
+  resource_group_name        = var.name_overrides.resource_group_name_vm != null ? var.name_overrides.resource_group_name_vm : var.resource_group_name
   size                       = var.virtual_machine_config.size
   provision_vm_agent         = var.virtual_machine_config.provision_vm_agent
   allow_extension_operations = var.virtual_machine_config.allow_extension_operations

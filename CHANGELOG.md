@@ -11,6 +11,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 ### Added
 
 - Added name overrides for the resource group of nic, data disk and public ip
+- Updated import VM exmaple to reflect the new feature
 
 ## [8.1.0] - 2025-02-02
 

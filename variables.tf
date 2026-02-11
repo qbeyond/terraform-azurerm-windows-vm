@@ -80,9 +80,9 @@ variable "subnet" {
 }
 
 variable "is_imported" {
-  type = bool
-  nullable = false
-  default = false
+  type        = bool
+  nullable    = false
+  default     = false
   description = <<-DOC
   ```
     Optianally. Specify whether the VM is imported from an existing VM. Defaults to false. 
@@ -427,14 +427,17 @@ variable "resource_group_name" {
 
 variable "name_overrides" {
   type = object({
-    nic                 = optional(string)
-    nic_ip_config       = optional(string)
-    public_ip           = optional(string)
-    virtual_machine     = optional(string)
-    os_disk             = optional(string)
-    data_disks          = optional(map(string), {})
-    hostname            = optional(string)
-    resource_group_name = optional(string)
+    nic                           = optional(string)
+    nic_ip_config                 = optional(string)
+    public_ip                     = optional(string)
+    virtual_machine               = optional(string)
+    os_disk                       = optional(string)
+    data_disks                    = optional(map(string), {})
+    hostname                      = optional(string)
+    resource_group_name_vm        = optional(string)
+    resource_group_name_nic       = optional(string)
+    resource_group_name_data_disk = optional(string)
+    resource_group_name_public_ip = optional(string)
   })
   description = "Possibility to override names that will be generated according to q.beyond naming convention."
   default     = {}

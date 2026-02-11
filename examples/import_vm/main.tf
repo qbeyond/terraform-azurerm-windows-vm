@@ -5,12 +5,12 @@
 # 4. If all resources get imported successfully, the Module works as intended.
 # (There are two error build in to test the correction of the name_overrides. The hostname and RG name)
 provider "azurerm" {
-  subscription_id = "b48fbace-f1cd-449e-b837-41c6f1a3c96d" # <-- Fill in Subscription ID
+  subscription_id = "<Subscription ID>" # <-- Fill in Subscription ID
   features {}
 }
 
 module "virtual_machine" {
-  source = "../.."
+  source      = "../.."
   is_imported = true
   virtual_machine_config = {
     hostname             = "CUSTAPP002"
@@ -44,12 +44,14 @@ module "virtual_machine" {
   }
 
   name_overrides = {
-    hostname = "CUSTAPP001"
-    virtual_machine = "vm-CUSTAPP001"
-    resource_group_name = "rg-examples_vm_deploy-01"
-    os_disk = "disk-CUSTAPP001-Os"
-    nic = "nic-CUSTAPP001-10-0-0-0-24"
-    data_disks = { "Data00" = "disk-CUSTAPP001-Data00" }
+    hostname                      = "CUSTAPP001"
+    virtual_machine               = "vm-CUSTAPP001"
+    resource_group_name_vm        = "rg-examples_vm_deploy-01"
+    resource_group_name_nic       = "rg-examples_vm_deploy-01"
+    resource_group_name_data_disk = "rg-examples_vm_deploy-01"
+    os_disk                       = "disk-CUSTAPP001-Os"
+    nic                           = "nic-CUSTAPP001-10-0-0-0-24"
+    data_disks                    = { "Data00" = "disk-CUSTAPP001-Data00" }
   }
 }
 
@@ -84,12 +86,12 @@ import {
 
 import {
   to = module.virtual_machine.azurerm_managed_disk.imported["Data00"]
-  id = "/subscriptions/<Subscription ID>/resourceGroups/rg-examples_vm_deploy-01/providers/Microsoft.Compute/disks/disk-CUSTAPP001-Data00"
+  id = "/subscriptions/<Subscription ID>/resourceGroups/rg-examples_vm_deploy-01/providers/Microsoft.Compute/disks/disk-CUSTAPP001-Data00" # <-- Fill in Resource ID of the existing Data Disk
 }
 
 import {
   to = module.virtual_machine.azurerm_virtual_machine_data_disk_attachment.data_disk["Data00"]
-  id = "/subscriptions/<Subscription ID>/resourceGroups/rg-examples_vm_deploy-01/providers/Microsoft.Compute/virtualMachines/vm-CUSTAPP001/dataDisks/disk-CUSTAPP001-Data00"
+  id = "/subscriptions/<Subscription ID>/resourceGroups/rg-examples_vm_deploy-01/providers/Microsoft.Compute/virtualMachines/vm-CUSTAPP001/dataDisks/disk-CUSTAPP001-Data00" # <-- Fill in Resource ID of the existing Data Disk Attachment
 }
 
 import {

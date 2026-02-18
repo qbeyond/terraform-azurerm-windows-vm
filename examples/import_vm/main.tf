@@ -90,7 +90,7 @@ import {
 }
 
 import {
-  to = module.virtual_machine.azurerm_virtual_machine_data_disk_attachment.data_disk["Data00"]
+  to = module.virtual_machine.azurerm_virtual_machine_data_disk_attachment.imported["Data00"]
   id = "/subscriptions/<Subscription ID>/resourceGroups/rg-examples_vm_deploy-01/providers/Microsoft.Compute/virtualMachines/vm-CUSTAPP001/dataDisks/disk-CUSTAPP001-Data00" # <-- Fill in Resource ID of the existing Data Disk Attachment
 }
 

@@ -6,6 +6,13 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.3.0] - 2025-02-02
+
+### Added
+
+- Added ignore_changes block to the data disk attachment for importing VM`s
+- Updated import VM exmaple to reflect the new feature
+
 ## [8.2.0] - 2025-02-02
 
 ### Added

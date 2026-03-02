@@ -58,14 +58,31 @@ resource "azurerm_managed_disk" "imported" {
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "data_disk" {
-  for_each                  = var.data_disks
-  managed_disk_id           = length(azurerm_managed_disk.data_disk) > 0 ? azurerm_managed_disk.data_disk[each.key].id : azurerm_managed_disk.imported[each.key].id
-  virtual_machine_id        = var.is_imported ? azurerm_windows_virtual_machine.imported[0].id : azurerm_windows_virtual_machine.this[0].id
+  for_each                  = var.is_imported ? {} : var.data_disks
+  managed_disk_id           = azurerm_managed_disk.data_disk[each.key].id
+  virtual_machine_id        = azurerm_windows_virtual_machine.this[0].id
   lun                       = each.value["lun"]
   caching                   = each.value["caching"]
   write_accelerator_enabled = each.value["write_accelerator_enabled"]
 
   lifecycle {
     prevent_destroy = true
+  }
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "imported" {
+  for_each                  = var.is_imported ? var.data_disks : {}
+  managed_disk_id           = azurerm_managed_disk.imported[each.key].id
+  virtual_machine_id        = azurerm_windows_virtual_machine.imported[0].id
+  lun                       = each.value["lun"]
+  caching                   = each.value["caching"]
+  write_accelerator_enabled = each.value["write_accelerator_enabled"]
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes = [
+      virtual_machine_id,
+      managed_disk_id 
+    ]
   }
 }

@@ -389,6 +389,16 @@ variable "data_disks" {
     condition = alltrue([
       for v in var.data_disks :
       (
+        v.trusted_launch_enabled == null || v.trusted_launch_enabled == false ? true :
+        v.create_option == "Import" || v.create_option == "FromImage" ? true : false
+      )
+    ])
+    error_message = "Trusted Launch can only be enabled when create_option is FromImage or Import"
+  }
+  validation {
+    condition = alltrue([
+      for v in var.data_disks :
+      (
         v.storage_account_type != "UltraSSD_LRS" ? true :
         try(var.virtual_machine_config.additional_capabilities.ultra_ssd_enabled, false)
       )

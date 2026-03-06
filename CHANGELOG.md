@@ -15,6 +15,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 ### Added
 
 - Added documentation for trusted_launch_enabled
+- Added Validation for trusted_launch_enabled
 
 ## [8.3.0] - 2025-02-02
 

@@ -236,7 +236,7 @@ variable "data_disks" {
     disk_mbps_read_only        = optional(number)
     max_shares                 = optional(number)
     tags                       = optional(map(string), {})
-    trusted_launch_enabled     = optional(bool, true)
+    trusted_launch_enabled     = optional(bool)
   }))
   validation {
     condition     = length([for v in var.data_disks : v.lun]) == length(distinct([for v in var.data_disks : v.lun]))
@@ -389,6 +389,16 @@ variable "data_disks" {
     condition = alltrue([
       for v in var.data_disks :
       (
+        v.trusted_launch_enabled == null || v.trusted_launch_enabled == false ? true :
+        v.create_option == "Import" || v.create_option == "FromImage" ? true : false
+      )
+    ])
+    error_message = "Trusted Launch can only be enabled when create_option is FromImage or Import"
+  }
+  validation {
+    condition = alltrue([
+      for v in var.data_disks :
+      (
         v.storage_account_type != "UltraSSD_LRS" ? true :
         try(var.virtual_machine_config.additional_capabilities.ultra_ssd_enabled, false)
       )
@@ -416,6 +426,7 @@ variable "data_disks" {
     disk_iops_read_only: (Optional) The maximum number of IOPS allowed for the disk in read-only operations.
     disk_mbps_read_only: (Optional) The maximum number of MBps allowed for the disk in read-only operations.
     max_shares: (Optional) The maximum number of VMs that can share this disk.
+    trusted_launch_enabled: (Optional) Specifies if Trusted Launch is enabled for the Managed Disk. Trusted Launch can only be enabled when create_option is FromImage or Import.
    }
   ```
   DOC

@@ -6,6 +6,17 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.3.1] - 2025-03-06
+
+### Changed
+
+- Set deafult value of trusted_launch_enabled to null
+
+### Added
+
+- Added documentation for trusted_launch_enabled
+- Added Validation for trusted_launch_enabled
+
 ## [8.3.0] - 2025-02-02
 
 ### Added

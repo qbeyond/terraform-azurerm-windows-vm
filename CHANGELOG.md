@@ -6,7 +6,17 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [8.3.1] - 2025-03-06
+## [8.3.2] - 2026-03-16
+
+### Fixed
+
+- Fix disk_encryption validation variable for "unencrypted" disk
+
+### Changed
+
+- Replace deprecated parameter "enable_automatic_updates" with "automatic_updates_enabled"
+
+## [8.3.1] - 2026-03-06
 
 ### Changed
 
@@ -17,21 +27,21 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - Added documentation for trusted_launch_enabled
 - Added Validation for trusted_launch_enabled
 
-## [8.3.0] - 2025-02-02
+## [8.3.0] - 2026-03-02
 
 ### Added
 
 - Added ignore_changes block to the data disk attachment for importing VM`s
 - Updated import VM exmaple to reflect the new feature
 
-## [8.2.0] - 2025-02-02
+## [8.2.0] - 2026-02-11
 
 ### Added
 
 - Added name overrides for the resource group of nic, data disk and public ip
 - Updated import VM exmaple to reflect the new feature
 
-## [8.1.0] - 2025-02-02
+## [8.1.0] - 2026-02-10
 
 ### Added
 
@@ -41,7 +51,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 - Fixed output of module, which got an error while performing "terraform plan"
 
-## [8.0.0] - 2026-02-02
+## [8.0.0] - 2026-02-10
 
 ### Added
 

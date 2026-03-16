@@ -119,7 +119,7 @@ variable "virtual_machine_config" {
     bypass_platform_safety_checks_on_user_schedule_enabled = optional(bool, true)
     provision_vm_agent                                     = optional(bool, true)
     allow_extension_operations                             = optional(bool, true)
-    enable_automatic_updates                               = optional(bool, true)
+    automatic_updates_enabled                              = optional(bool, true)
 
 
     additional_capabilities = optional(object({
@@ -188,7 +188,7 @@ variable "virtual_machine_config" {
     patch_mode:  Specifies the mode of in-guest patching to this Windows Virtual Machine.
     provision_vm_agent: Optionally specify whether the VM agent should be provisioned. Defaults to true.
     allow_extension_operations: Optionally specify whether extension operations are allowed. Defaults to true.
-    enable_automatic_updates: Optionally specify whether automatic updates are enabled. Defaults to true. (Will be deprecated with version 5.0 of provider)
+    automatic_updates_enabled: Optionally specify whether automatic updates are enabled. Defaults to true. (Will be deprecated with version 5.0 of provider)
     bypass_platform_safety_checks_on_user_schedule_enabled: This setting ensures that machines are patched by using your configured schedules and not autopatched.
        Can only be set to true when patch_mode is set to AutomaticByPlatform.
     additional_capabilities: (Optional) Additional capabilities for the virtual machine.
@@ -505,8 +505,8 @@ variable "disk_encryption" {
     condition = (
       var.disk_encryption == null ||
       (
-        var.disk_encryption.settings != null &&
-        var.disk_encryption.settings.KeyVaultURL != ""
+        try(var.disk_encryption.settings, null) != null &&
+        try(var.disk_encryption.settings.KeyVaultURL, "") != ""
       )
     )
     error_message = "KeyVaultURL must be specified when disk_encryption is not null."

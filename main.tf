@@ -50,7 +50,7 @@ resource "azurerm_windows_virtual_machine" "this" {
   allow_extension_operations = var.virtual_machine_config.allow_extension_operations
   admin_username             = var.virtual_machine_config.admin_username
   admin_password             = var.admin_password
-  enable_automatic_updates   = var.virtual_machine_config.enable_automatic_updates
+  automatic_updates_enabled  = var.virtual_machine_config.automatic_updates_enabled
 
   os_disk {
     name                 = local.os_disk_name
@@ -114,7 +114,7 @@ resource "azurerm_windows_virtual_machine" "imported" {
   allow_extension_operations = var.virtual_machine_config.allow_extension_operations
   admin_username             = var.virtual_machine_config.admin_username
   admin_password             = var.admin_password
-  enable_automatic_updates   = var.virtual_machine_config.enable_automatic_updates
+  automatic_updates_enabled  = var.virtual_machine_config.automatic_updates_enabled
 
   os_disk {
     name                 = local.os_disk_name

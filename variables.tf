@@ -505,8 +505,8 @@ variable "disk_encryption" {
     condition = (
       var.disk_encryption == null ||
       (
-        var.disk_encryption.settings != null &&
-        var.disk_encryption.settings.KeyVaultURL != ""
+        try(var.disk_encryption.settings, null) != null &&
+        try(var.disk_encryption.settings.KeyVaultURL, "") != ""
       )
     )
     error_message = "KeyVaultURL must be specified when disk_encryption is not null."

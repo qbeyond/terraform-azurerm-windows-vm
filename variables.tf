@@ -237,6 +237,8 @@ variable "data_disks" {
     max_shares                 = optional(number)
     tags                       = optional(map(string), {})
     trusted_launch_enabled     = optional(bool)
+    network_access_policy         = optional(string)
+    public_network_access_enabled = optional(bool)
   }))
   validation {
     condition     = length([for v in var.data_disks : v.lun]) == length(distinct([for v in var.data_disks : v.lun]))
@@ -379,8 +381,15 @@ variable "data_disks" {
   validation {
     condition = alltrue([
       for o in var.data_disks : (
-        (o.disk_mbps_read_write == null ? true : (o.disk_mbps_read_write >= 125 && o.disk_mbps_read_write <= 750)) &&
-        (o.disk_mbps_read_only == null ? true : (o.disk_mbps_read_only >= 125 && o.disk_mbps_read_only <= 750))
+        (o.storage_account_type == "PremiumV2_LRS" &&
+          (o.disk_mbps_read_write == null ? true : (o.disk_mbps_read_write >= 125 && o.disk_mbps_read_write <= 2000)) &&
+          (o.disk_mbps_read_only == null ? true : (o.disk_mbps_read_only >= 125 && o.disk_mbps_read_only <= 2000))
+        ) ||
+        (o.storage_account_type == "UltraSSD_LRS" &&
+          (o.disk_mbps_read_write == null ? true : (o.disk_mbps_read_write >= 125 && o.disk_mbps_read_write <= 10000)) &&
+          (o.disk_mbps_read_only == null ? true : (o.disk_mbps_read_only >= 125 && o.disk_mbps_read_only <= 10000))
+        ) ||
+        (o.storage_account_type != "UltraSSD_LRS" && o.storage_account_type != "PremiumV2_LRS")
       )
     ])
     error_message = "disk_mbps_read_write and disk_mbps_read_only must be between 125 and 1000 if set."
@@ -427,6 +436,8 @@ variable "data_disks" {
     disk_mbps_read_only: (Optional) The maximum number of MBps allowed for the disk in read-only operations.
     max_shares: (Optional) The maximum number of VMs that can share this disk.
     trusted_launch_enabled: (Optional) Specifies if Trusted Launch is enabled for the Managed Disk. Trusted Launch can only be enabled when create_option is FromImage or Import.
+    network_access_enabled: (Optional) Policy for accessing the disk via network. Allowed values are AllowAll, AllowPrivate, and DenyAll.
+    public_network_access_enabled: (Optional) Whether it is allowed to access the disk via public network.
    }
   ```
   DOC

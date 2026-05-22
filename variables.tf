@@ -222,21 +222,21 @@ variable "admin_password" {
 
 variable "data_disks" {
   type = map(object({
-    lun                        = number
-    disk_size_gb               = number
-    caching                    = optional(string, "ReadWrite")
-    create_option              = optional(string, "Empty")
-    source_resource_id         = optional(string)
-    storage_account_type       = optional(string, "StandardSSD_LRS")
-    write_accelerator_enabled  = optional(bool, false)
-    on_demand_bursting_enabled = optional(bool, false)
-    disk_iops_read_write       = optional(number)
-    disk_mbps_read_write       = optional(number)
-    disk_iops_read_only        = optional(number)
-    disk_mbps_read_only        = optional(number)
-    max_shares                 = optional(number)
-    tags                       = optional(map(string), {})
-    trusted_launch_enabled     = optional(bool)
+    lun                           = number
+    disk_size_gb                  = number
+    caching                       = optional(string, "ReadWrite")
+    create_option                 = optional(string, "Empty")
+    source_resource_id            = optional(string)
+    storage_account_type          = optional(string, "StandardSSD_LRS")
+    write_accelerator_enabled     = optional(bool, false)
+    on_demand_bursting_enabled    = optional(bool, false)
+    disk_iops_read_write          = optional(number)
+    disk_mbps_read_write          = optional(number)
+    disk_iops_read_only           = optional(number)
+    disk_mbps_read_only           = optional(number)
+    max_shares                    = optional(number)
+    tags                          = optional(map(string), {})
+    trusted_launch_enabled        = optional(bool)
     network_access_policy         = optional(string)
     public_network_access_enabled = optional(bool)
   }))

@@ -1,20 +1,22 @@
 resource "azurerm_managed_disk" "data_disk" {
-  for_each                   = var.is_imported ? {} : var.data_disks
-  name                       = lookup(var.name_overrides.data_disks, each.key, "disk-${var.virtual_machine_config.hostname}-${each.key}")
-  location                   = var.virtual_machine_config.location
-  resource_group_name        = var.name_overrides.resource_group_name_data_disk != null ? var.name_overrides.resource_group_name_data_disk : var.resource_group_name
-  storage_account_type       = each.value["storage_account_type"]
-  create_option              = each.value["create_option"]
-  source_resource_id         = each.value["source_resource_id"]
-  disk_size_gb               = each.value["disk_size_gb"]
-  on_demand_bursting_enabled = each.value["on_demand_bursting_enabled"]
-  zone                       = var.virtual_machine_config.zone
-  disk_iops_read_write       = each.value["disk_iops_read_write"]
-  disk_mbps_read_write       = each.value["disk_mbps_read_write"]
-  disk_iops_read_only        = each.value["disk_iops_read_only"]
-  disk_mbps_read_only        = each.value["disk_mbps_read_only"]
-  max_shares                 = each.value["max_shares"] 
-  trusted_launch_enabled     = each.value["trusted_launch_enabled"]
+  for_each                      = var.is_imported ? {} : var.data_disks
+  name                          = lookup(var.name_overrides.data_disks, each.key, "disk-${var.virtual_machine_config.hostname}-${each.key}")
+  location                      = var.virtual_machine_config.location
+  resource_group_name           = var.name_overrides.resource_group_name_data_disk != null ? var.name_overrides.resource_group_name_data_disk : var.resource_group_name
+  storage_account_type          = each.value["storage_account_type"]
+  create_option                 = each.value["create_option"]
+  source_resource_id            = each.value["source_resource_id"]
+  disk_size_gb                  = each.value["disk_size_gb"]
+  on_demand_bursting_enabled    = each.value["on_demand_bursting_enabled"]
+  zone                          = var.virtual_machine_config.zone
+  disk_iops_read_write          = each.value["disk_iops_read_write"]
+  disk_mbps_read_write          = each.value["disk_mbps_read_write"]
+  disk_iops_read_only           = each.value["disk_iops_read_only"]
+  disk_mbps_read_only           = each.value["disk_mbps_read_only"]
+  max_shares                    = each.value["max_shares"]
+  trusted_launch_enabled        = each.value["trusted_launch_enabled"]
+  network_access_policy         = each.value["network_access_policy"]
+  public_network_access_enabled = each.value["public_network_access_enabled"]
 
   tags = merge(
     var.tags,
@@ -26,22 +28,24 @@ resource "azurerm_managed_disk" "data_disk" {
 }
 
 resource "azurerm_managed_disk" "imported" {
-  for_each                   = var.is_imported ? var.data_disks : {}
-  name                       = lookup(var.name_overrides.data_disks, each.key, "disk-${var.virtual_machine_config.hostname}-${each.key}")
-  location                   = var.virtual_machine_config.location
-  resource_group_name        = var.name_overrides.resource_group_name_data_disk != null ? var.name_overrides.resource_group_name_data_disk : var.resource_group_name
-  storage_account_type       = each.value["storage_account_type"]
-  create_option              = each.value["create_option"]
-  source_resource_id         = each.value["source_resource_id"]
-  disk_size_gb               = each.value["disk_size_gb"]
-  on_demand_bursting_enabled = each.value["on_demand_bursting_enabled"]
-  zone                       = var.virtual_machine_config.zone
-  disk_iops_read_write       = each.value["disk_iops_read_write"]
-  disk_mbps_read_write       = each.value["disk_mbps_read_write"]
-  disk_iops_read_only        = each.value["disk_iops_read_only"]
-  disk_mbps_read_only        = each.value["disk_mbps_read_only"]
-  max_shares                 = each.value["max_shares"]
-  trusted_launch_enabled     = each.value["trusted_launch_enabled"]
+  for_each                      = var.is_imported ? var.data_disks : {}
+  name                          = lookup(var.name_overrides.data_disks, each.key, "disk-${var.virtual_machine_config.hostname}-${each.key}")
+  location                      = var.virtual_machine_config.location
+  resource_group_name           = var.name_overrides.resource_group_name_data_disk != null ? var.name_overrides.resource_group_name_data_disk : var.resource_group_name
+  storage_account_type          = each.value["storage_account_type"]
+  create_option                 = each.value["create_option"]
+  source_resource_id            = each.value["source_resource_id"]
+  disk_size_gb                  = each.value["disk_size_gb"]
+  on_demand_bursting_enabled    = each.value["on_demand_bursting_enabled"]
+  zone                          = var.virtual_machine_config.zone
+  disk_iops_read_write          = each.value["disk_iops_read_write"]
+  disk_mbps_read_write          = each.value["disk_mbps_read_write"]
+  disk_iops_read_only           = each.value["disk_iops_read_only"]
+  disk_mbps_read_only           = each.value["disk_mbps_read_only"]
+  max_shares                    = each.value["max_shares"]
+  trusted_launch_enabled        = each.value["trusted_launch_enabled"]
+  network_access_policy         = each.value["network_access_policy"]
+  public_network_access_enabled = each.value["public_network_access_enabled"]
 
   tags = merge(
     var.tags,
@@ -52,7 +56,7 @@ resource "azurerm_managed_disk" "imported" {
     ignore_changes = [
       upload_size_bytes,
       create_option,
-      source_resource_id 
+      source_resource_id
     ]
   }
 }
@@ -82,7 +86,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "imported" {
     prevent_destroy = true
     ignore_changes = [
       virtual_machine_id,
-      managed_disk_id 
+      managed_disk_id
     ]
   }
 }

@@ -6,6 +6,16 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.4.0] - 2026-03-02
+
+### Added
+
+- Added variables network_access_policy, public_network_access_enabled to the data_disk block
+
+### Fixed
+
+- Fixed a validation of the data_disk
+
 ## [8.3.2] - 2026-03-16
 
 ### Fixed

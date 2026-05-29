@@ -101,7 +101,7 @@ variable "virtual_machine_config" {
     location                                               = string
     os_sku                                                 = string
     os_publisher                                           = optional(string, "MicrosoftWindowsServer")
-    os_offer                                               = optional(string, "WindowsServer")
+    os_offer                                               = optional(string, "windowsserver2022")
     os_version                                             = optional(string, "latest")
     os_disk_caching                                        = optional(string, "ReadWrite")
     os_disk_storage_type                                   = optional(string, "StandardSSD_LRS")

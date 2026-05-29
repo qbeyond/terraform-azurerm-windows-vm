@@ -6,6 +6,12 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.5.0] - 2026-05-29
+
+### Added
+
+- Microsoft changed the os_offer for Windows Server 2022 images to support the deplrication of .NET 6. The default os_offer value has been changed to reflect this change. (https://techcommunity.microsoft.com/blog/azurecompute/incoming-changes-for-window-server-2022-marketplace-image-users/4262423)
+
 ## [8.4.0] - 2026-03-02
 
 ### Added

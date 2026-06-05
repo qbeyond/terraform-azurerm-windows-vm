@@ -63,6 +63,7 @@ resource "azurerm_managed_disk" "imported" {
 
 resource "azurerm_virtual_machine_data_disk_attachment" "data_disk" {
   for_each                  = var.is_imported ? {} : var.data_disks
+  count                     = each.value["is_attached"] ? 1 : 0
   managed_disk_id           = azurerm_managed_disk.data_disk[each.key].id
   virtual_machine_id        = azurerm_windows_virtual_machine.this[0].id
   lun                       = each.value["lun"]
@@ -76,6 +77,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "data_disk" {
 
 resource "azurerm_virtual_machine_data_disk_attachment" "imported" {
   for_each                  = var.is_imported ? var.data_disks : {}
+  count                     = each.value["is_attached"] ? 1 : 0
   managed_disk_id           = azurerm_managed_disk.imported[each.key].id
   virtual_machine_id        = azurerm_windows_virtual_machine.imported[0].id
   lun                       = each.value["lun"]

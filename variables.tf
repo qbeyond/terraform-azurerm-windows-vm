@@ -239,7 +239,6 @@ variable "data_disks" {
     trusted_launch_enabled        = optional(bool)
     network_access_policy         = optional(string)
     public_network_access_enabled = optional(bool)
-    is_attached                   = optional(bool, true)
   }))
   validation {
     condition     = length([for v in var.data_disks : v.lun]) == length(distinct([for v in var.data_disks : v.lun]))

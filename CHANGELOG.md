@@ -6,6 +6,12 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [8.6.0] - 2026-06-05
+
+### Added
+
+- Added flag to decide whether attach a disk or not
+
 ## [8.5.0] - 2026-05-29
 
 ### Added

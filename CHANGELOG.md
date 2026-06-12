@@ -6,6 +6,12 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [9.0.0] - 2026-06-09
+
+### Removed
+
+- Removed Azure Disk Encryption (ADE) support. ADE is scheduled for retirement on September 15, 2028 ([Microsoft retirement notice](https://learn.microsoft.com/en-us/azure/virtual-machines/disk-encryption-migrate)). Use encryption at host for new VMs instead.
+
 ## [8.5.0] - 2026-05-29
 
 ### Added

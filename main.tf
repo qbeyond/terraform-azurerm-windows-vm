@@ -23,7 +23,22 @@ resource "azurerm_network_interface" "this" {
     private_ip_address_allocation = var.nic_config.private_ip == null ? "Dynamic" : "Static"
     private_ip_address            = var.nic_config.private_ip
     public_ip_address_id          = var.public_ip_config.enabled ? azurerm_public_ip.this[0].id : null
+    primary                       = true
   }
+
+  dynamic "ip_configuration" {
+    for_each = var.additional_ip_configurations
+    content {
+      name                          = ip_configuration.key
+      subnet_id                     = ip_configuration.value.subnet_id
+      private_ip_address_allocation = ip_configuration.value.private_ip_address == null ? "Dynamic" : "Static"
+      private_ip_address            = ip_configuration.value.private_ip_address
+      private_ip_address_version    = ip_configuration.value.private_ip_address_version
+      public_ip_address_id          = ip_configuration.value.public_ip_address_id
+      primary                       = false
+    }
+  }
+
   tags = var.tags
 }
 

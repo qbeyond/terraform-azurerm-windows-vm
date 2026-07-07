@@ -9,7 +9,7 @@ locals {
   nsg_name                       = "nsg-examples_vm_deploy-02"
 
   nic             = "nic-examples_vm_deploy-02"
-  nic_ip_config   = "nic-ip-examples_vm_deploy-02"
+  nic_ip_config   = "internal"
   public_ip       = "pip-examples_vm_deploy-02"
   virtual_machine = "vm-examples_vm_deploy-02"
 }

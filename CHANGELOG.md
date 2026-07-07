@@ -9,6 +9,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 ### Added
 
 - Added `additional_ip_configurations` variable to allow adding multiple IP configurations to the NIC.
+- The default ip configuratin has been renamed from `internal` to `primary-ip-configuration`. To use this and all following versions with existing deployments the `name_overrides` variable needs to be used. Checkout the advanced example.
 
 ## [9.0.0] - 2026-06-09
 

@@ -54,6 +54,26 @@ variable "nic_config" {
   DOC
 }
 
+variable "additional_ip_configurations" {
+  type = map(object({
+    subnet_id                  = string
+    private_ip_address         = optional(string)
+    private_ip_address_version = optional(string, "IPv4")
+    public_ip_address_id       = optional(string)
+  }))
+  default     = {}
+  nullable    = false
+  description = <<-DOC
+  ```
+    Map of additional IP configurations for the NIC. The key is used as the IP configuration name.
+    subnet_id: The subnet id for this IP configuration.
+    private_ip_address: Optionally specify a static private IP address. If omitted, a dynamic address is allocated.
+    private_ip_address_version: The IP version to use. Defaults to IPv4.
+    public_ip_address_id: Optionally specify a public IP address id to associate.
+  ```
+  DOC
+}
+
 variable "additional_network_interface_ids" {
   type        = list(string)
   default     = []

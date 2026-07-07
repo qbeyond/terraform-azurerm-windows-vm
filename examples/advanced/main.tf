@@ -55,6 +55,13 @@ module "virtual_machine" {
     }
   }
 
+  additional_ip_configurations = {
+    "secondary" = {
+      subnet_id          = azurerm_subnet.this.id
+      private_ip_address = "10.0.0.17"
+    }
+  }
+
   additional_network_interface_ids = [azurerm_network_interface.additional_nic_01.id]
   severity_group                   = "01-third-tuesday-0200-XCSUFEDTG-reboot"
   update_allowed                   = true

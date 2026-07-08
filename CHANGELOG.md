@@ -13,6 +13,7 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 ### Fixed
 
 - Fixed naming convention from the public ip
+- Removed unnessassary variable from the basic example
 
 ## [9.1.0]
 

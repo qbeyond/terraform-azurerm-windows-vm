@@ -2,6 +2,7 @@ variable "public_ip_config" {
   type = object({
     enabled           = bool
     allocation_method = optional(string, "Static")
+    stage             = optional(string, null)
     sku               = optional(string, "Standard")
   })
   default = {
@@ -11,13 +12,16 @@ variable "public_ip_config" {
     condition     = contains(["Static", "Dynamic"], var.public_ip_config.allocation_method)
     error_message = "Allocation method must be Static or Dynamic"
   }
+
   validation {
-    condition = (
-      var.virtual_machine_config.zone == null || var.public_ip_config.sku == "Standard"
-    )
+    condition     = var.public_ip_config.enabled && var.virtual_machine_config.zone != null ? var.public_ip_config.sku == "Standard" : true
     error_message = "If a zone is specified, the Public IP SKU must be set to 'Standard'."
   }
 
+  validation {
+    condition     = var.public_ip_config.enabled ? var.public_ip_config.stage != null && contains(["dev", "qas", "prd", "tst"], var.public_ip_config.stage) : true
+    error_message = "The stage must be dev, qas, tst and prd"
+  }
   description = <<-DOC
   ```
     enabled: Optionally select true if a public ip should be created. Defaults to false.

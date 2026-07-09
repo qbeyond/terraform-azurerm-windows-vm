@@ -1,5 +1,4 @@
 provider "azurerm" {
-  subscription_id = "<Subscription ID>" # <-- Fill in Subscription ID
   features {}
 }
 

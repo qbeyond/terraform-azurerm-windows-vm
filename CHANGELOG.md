@@ -4,6 +4,17 @@ All notable changes to this module will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),  
 and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [9.2.0] - 2026-07-08
+
+### Added
+
+- Added the stage variable to the public ip, also added validation of the variable
+
+### Fixed
+
+- Fixed naming convention of the public ip
+- Removed unnecessary variable from the basic example
+
 ## [9.1.0]
 
 ### Added

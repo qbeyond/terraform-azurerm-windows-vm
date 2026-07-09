@@ -8,11 +8,11 @@ and this module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Added the stage variable to the public ip, also added validation for the variable
+- Added the stage variable to the public ip, also added validation of the variable
 
 ### Fixed
 
-- Fixed naming convention from the public ip
+- Fixed naming convention of the public ip
 - Removed unnessassary variable from the basic example
 
 ## [9.1.0]

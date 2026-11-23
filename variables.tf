@@ -149,7 +149,7 @@ variable "virtual_machine_config" {
     additional_capabilities = optional(object({
       ultra_ssd_enabled   = optional(bool, false)
       hibernation_enabled = optional(bool, false)
-    }), {})
+    }))
 
     identity = optional(object({
       identity_type = optional(string, null)
@@ -158,7 +158,7 @@ variable "virtual_machine_config" {
 
     boot_diagnostics = optional(object({
       storage_account_uri = optional(string, null)
-    }), {})
+    }))
   })
 
   validation {
@@ -215,7 +215,7 @@ variable "virtual_machine_config" {
     automatic_updates_enabled: Optionally specify whether automatic updates are enabled. Defaults to true. (Will be deprecated with version 5.0 of provider)
     bypass_platform_safety_checks_on_user_schedule_enabled: This setting ensures that machines are patched by using your configured schedules and not autopatched.
        Can only be set to true when patch_mode is set to AutomaticByPlatform.
-    additional_capabilities: (Optional) Additional capabilities for the virtual machine.
+    additional_capabilities: (Optional) Additional capabilities for the virtual machine. Adding or changing these blocks on an EXISTING VM may trigger a stop/start of the VM (observed with azurerm 4.0.0). Plan during a maintenance window and review the plan carefully.
       ultra_ssd_enabled: (Optional) Enable UltraSSD_LRS for the virtual machine. Defaults to false.
       hibernation_enabled: (Optional) Enable hibernation for the virtual machine. Defaults to false.       
     identity: (Optional) Identity configuration for the virtual machine.

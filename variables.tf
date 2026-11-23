@@ -495,3 +495,8 @@ variable "tags" {
   description = "A mapping of tags to add to the resources created in this module"
   default     = {}
 }
+
+variable "acknowledge_vm_restart_risk" {
+  type    = bool
+  default = false
+}

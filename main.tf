@@ -93,11 +93,6 @@ resource "azurerm_windows_virtual_machine" "this" {
   secure_boot_enabled                                    = var.virtual_machine_config.secure_boot_enabled
   bypass_platform_safety_checks_on_user_schedule_enabled = var.virtual_machine_config.bypass_platform_safety_checks_on_user_schedule_enabled
 
-  additional_capabilities {
-    ultra_ssd_enabled   = var.virtual_machine_config.additional_capabilities.ultra_ssd_enabled
-    hibernation_enabled = var.virtual_machine_config.additional_capabilities.hibernation_enabled
-  }
-
   dynamic "identity" {
     for_each = var.virtual_machine_config.identity == null ? [] : [var.virtual_machine_config.identity]
     content {
@@ -106,8 +101,19 @@ resource "azurerm_windows_virtual_machine" "this" {
     }
   }
 
-  boot_diagnostics {
-    storage_account_uri = var.virtual_machine_config.boot_diagnostics.storage_account_uri
+  dynamic "additional_capabilities" {
+    for_each = var.virtual_machine_config.additional_capabilities != null ? [var.virtual_machine_config.additional_capabilities] : []
+    content {
+      ultra_ssd_enabled   = additional_capabilities.value.ultra_ssd_enabled
+      hibernation_enabled = additional_capabilities.value.hibernation_enabled
+    }
+  }
+
+  dynamic "boot_diagnostics" {
+    for_each = var.virtual_machine_config.boot_diagnostics != null ? [var.virtual_machine_config.boot_diagnostics] : []
+    content {
+      storage_account_uri = boot_diagnostics.value.storage_account_uri
+    }
   }
 
   lifecycle {
@@ -157,11 +163,6 @@ resource "azurerm_windows_virtual_machine" "imported" {
   secure_boot_enabled                                    = var.virtual_machine_config.secure_boot_enabled
   bypass_platform_safety_checks_on_user_schedule_enabled = var.virtual_machine_config.bypass_platform_safety_checks_on_user_schedule_enabled
 
-  additional_capabilities {
-    ultra_ssd_enabled   = var.virtual_machine_config.additional_capabilities.ultra_ssd_enabled
-    hibernation_enabled = var.virtual_machine_config.additional_capabilities.hibernation_enabled
-  }
-
   dynamic "identity" {
     for_each = var.virtual_machine_config.identity == null ? [] : [var.virtual_machine_config.identity]
     content {
@@ -170,8 +171,19 @@ resource "azurerm_windows_virtual_machine" "imported" {
     }
   }
 
-  boot_diagnostics {
-    storage_account_uri = var.virtual_machine_config.boot_diagnostics.storage_account_uri
+  dynamic "additional_capabilities" {
+    for_each = var.virtual_machine_config.additional_capabilities != null ? [var.virtual_machine_config.additional_capabilities] : []
+    content {
+      ultra_ssd_enabled   = additional_capabilities.value.ultra_ssd_enabled
+      hibernation_enabled = additional_capabilities.value.hibernation_enabled
+    }
+  }
+
+  dynamic "boot_diagnostics" {
+    for_each = var.virtual_machine_config.boot_diagnostics != null ? [var.virtual_machine_config.boot_diagnostics] : []
+    content {
+      storage_account_uri = boot_diagnostics.value.storage_account_uri
+    }
   }
 
   lifecycle {
